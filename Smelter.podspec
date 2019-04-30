@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
   s.summary               = 'Build MPSNNGraph from ONNX model file'
   s.homepage              = 'https://github.com/prisma-ai/MPSNNGraphONNXBuilder'
   s.author                = { 'Andrey Volodin' => 'a.volodin@prisma-ai.com' }
-  s.source                = { :git => 'https://github.com/prisma-ai/MPSNNGraphONNXBuilder.git', :tag => s.version.to_s }
+  s.source                = { :git => 'https://github.com/prisma-ai/Smelter.git', :tag => s.version.to_s }
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.13'
   s.source_files          = 'Sources/**/*.{swift}', '*.py'
