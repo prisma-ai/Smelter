@@ -66,20 +66,39 @@ public final class ONNXGraph {
         }
 
         let _ = self
-            .register(name: "Conv", converter: ConvolutionConverter())
-            .register(name: "Relu", converter: ReluConverter())
-            .register(name: "Elu", converter: EluConverter())
             .register(name: "Add", converter: AddConverter())
+            .register(name: "Sub", converter: SubConverter())
+            .register(name: "Mul", converter: MulConverter())
+            .register(name: "Div", converter: DivConverter())
+
+            .register(name: "Conv", converter: ConvolutionConverter())
             .register(name: "ConvTranspose", converter: ConvolutionConverter())
-            .register(name: "Sigmoid", converter: SigmoidConverter())
-            .register(name: "Upsample", converter: UpsampleConverter())
-            .register(name: "Concat", converter: ConcatConverter())
+
             .register(name: "AveragePool", converter: AveragePoolConverter())
             .register(name: "MaxPool", converter: MaxPoolConverter())
-            .register(name: "Softmax", converter: SoftmaxConverter())
-            .register(name: "Constant", converter: ConstantConverter())
+
+            .register(name: "Abs", converter: AbsConverter())
+            .register(name: "Elu", converter: EluConverter())
+            .register(name: "HardSigmoid", converter: HardSigmoidConverter())
+            .register(name: "Relu", converter: ReluConverter())
+            .register(name: "Sigmoid", converter: SigmoidConverter())
+            .register(name: "Softplus", converter: SoftplusConverter())
+            .register(name: "Softsign", converter: SoftsignConverter())
+            .register(name: "Tanh", converter: TanhConverter())
             .register(name: "Exp", converter: ExpConverter())
-            .register(name: "Mul", converter: MulConverter())
+            .register(name: "Log", converter: LogConverter())
+            .register(name: "Pow", converter: PowConverter())
+
+            .register(name: "Softmax", converter: SoftmaxConverter())
+            .register(name: "LogSoftmax", converter: LogSoftmaxConverter())
+
+            .register(name: "Upsample", converter: UpsampleConverter())
+
+            .register(name: "Dropout", converter: DropoutConverter())
+
+            .register(name: "Concat", converter: ConcatConverter())
+
+            .register(name: "Constant", converter: ConstantConverter())
     }
 
     public convenience init(contentsOf url: URL) throws {
