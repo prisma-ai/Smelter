@@ -33,7 +33,7 @@ class AddConverter: NodeConverter {
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
             node.input.count == 2
-            else { throw ONNXGraph.Errors.noSuchOutput }
+        else { throw ONNXGraph.Errors.noSuchOutput }
 
         let add = MPSNNAdditionNode(leftSource: input1, rightSource: input2)
         graph.addFilter(add, withOutputs: node.output)
@@ -46,7 +46,7 @@ class SubConverter: NodeConverter {
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
             node.input.count == 2
-            else { throw ONNXGraph.Errors.noSuchOutput }
+        else { throw ONNXGraph.Errors.noSuchOutput }
 
         let sub = MPSNNSubtractionNode(leftSource: input1, rightSource: input2)
         graph.addFilter(sub, withOutputs: node.output)
@@ -59,7 +59,7 @@ class MulConverter: NodeConverter {
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
             node.input.count == 2
-            else { throw ONNXGraph.Errors.noSuchOutput }
+        else { throw ONNXGraph.Errors.noSuchOutput }
 
         let add = MPSNNMultiplicationNode(leftSource: input1, rightSource: input2)
         graph.addFilter(add, withOutputs: node.output)
@@ -72,7 +72,7 @@ class DivConverter: NodeConverter {
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
             node.input.count == 2
-            else { throw ONNXGraph.Errors.noSuchOutput }
+        else { throw ONNXGraph.Errors.noSuchOutput }
 
         let div = MPSNNDivisionNode(leftSource: input1, rightSource: input2)
         graph.addFilter(div, withOutputs: node.output)
