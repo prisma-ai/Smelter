@@ -99,6 +99,10 @@ public final class ONNXGraph {
             .register(name: "Concat", converter: ConcatConverter())
 
             .register(name: "Constant", converter: ConstantConverter())
+
+            .register(name: "Gemm", converter: GemmConverter())
+
+            .register(name: "BatchNormalization", converter: BatchNormalizationConverter())
     }
 
     public convenience init(contentsOf url: URL) throws {

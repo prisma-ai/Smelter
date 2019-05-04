@@ -379,6 +379,164 @@ class MaxPoolConverter: NodeConverter {
     }
 }
 
+// MARK: - Fully Connected Layer Nodes
+
+class GemmConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard let input = graph.output(name: node.input[0]) else {
+            throw ONNXGraph.Errors.noSuchOutput
+        }
+
+        guard let weight = graph.tensor(node.input[1]) else {
+            throw ONNXGraph.Errors.insufficientInputs
+        }
+
+        var bias: Onnx_TensorProto?
+        if node.input.count > 2 {
+            bias = graph.tensor(node.input[2])
+        }
+
+        var dilations: Dilations?
+        var strides: Strides?
+        var groups: Int?
+
+        for attr in node.attribute {
+            switch attr.name {
+            case "dilations":
+                dilations = (Int(attr.ints[0]), Int(attr.ints[1]))
+            case "strides":
+                strides = (Int(attr.ints[0]), Int(attr.ints[1]))
+            case "group":
+                groups = Int(attr.i)
+            default:
+                break
+            }
+        }
+
+        guard let d = dilations, let s = strides, let g = groups else {
+            throw ONNXGraph.Errors.notEnoughAttributes
+        }
+
+        let dataSource = ConvDataSource(weight: weight,
+                                        bias: bias,
+                                        dilations: d,
+                                        strides: s,
+                                        groups: g,
+                                        isTranspose: false,
+                                        isONNX2MPS: graph.modelFormat == .mpsFlavor)
+
+        let gemm = MPSCNNFullyConnectedNode(source: input, weights: dataSource)
+        graph.addFilter(gemm, withOutputs: node.output)
+    }
+}
+
+// MARK: - Normalization Layer Nodes
+
+@objc private class BatchNormalizationDataSource: NSObject, MPSCNNBatchNormalizationDataSource {
+
+    required init?(coder aDecoder: NSCoder) {
+        guard let data = aDecoder.decodeData(),
+            let other = NSKeyedUnarchiver.unarchiveObject(with: data) as? BatchNormalizationDataSource else {
+                return nil
+        }
+        self.nFeatureChannels = other.nFeatureChannels
+    }
+
+    private var meanW: [Float]?
+    private var varianceW: [Float]?
+    private var gammaW: [Float]?
+    private var betaW: [Float]?
+    private let nFeatureChannels: Int
+
+    func mean() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(OpaquePointer(UnsafeRawPointer(self.meanW)))
+    }
+    func variance() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(mutating: self.varianceW)
+    }
+    func gamma() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(mutating: self.gammaW)
+    }
+    func beta() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(mutating: self.betaW)
+    }
+
+    private static func toFloatArray(weight: Onnx_TensorProto, nFeatureChannels: Int) -> [Float]? {
+        switch Int(weight.dataType) {
+        case Onnx_TensorProto.DataType.float.rawValue:
+            return weight.rawData.withUnsafeBytes {
+                [Float](UnsafeBufferPointer<Float>(start: $0, count: nFeatureChannels))
+            }
+        case Onnx_TensorProto.DataType.float16.rawValue:
+            return weight.rawData.withUnsafeBytes {
+                float16to32(UnsafeMutableRawPointer(mutating: $0), count: nFeatureChannels)
+            }
+        default:
+            return nil
+        }
+    }
+
+    init(mean: Onnx_TensorProto, variance: Onnx_TensorProto, gamma: Onnx_TensorProto, beta: Onnx_TensorProto) {
+
+        let nFeatureChannels = Int(mean.dims[0])
+        self.nFeatureChannels = nFeatureChannels
+
+        self.meanW = BatchNormalizationDataSource.toFloatArray(weight: mean, nFeatureChannels: nFeatureChannels)
+        self.varianceW = BatchNormalizationDataSource.toFloatArray(weight: variance, nFeatureChannels: nFeatureChannels)
+        self.gammaW = BatchNormalizationDataSource.toFloatArray(weight: gamma, nFeatureChannels: nFeatureChannels)
+        self.betaW = BatchNormalizationDataSource.toFloatArray(weight: beta, nFeatureChannels: nFeatureChannels)
+    }
+
+    func numberOfFeatureChannels() -> Int {
+        return self.nFeatureChannels
+    }
+
+    func load() -> Bool {
+        return true
+    }
+
+    func purge() {
+        // no-op
+    }
+
+    func label() -> String? {
+        return nil
+    }
+
+    func copy(with zone: NSZone? = nil) -> Any {
+        return self.mutableCopy()
+    }
+
+}
+
+class BatchNormalizationConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard let input = graph.output(name: node.input[0]) else {
+            throw ONNXGraph.Errors.noSuchOutput
+        }
+
+        guard
+            let gamma = graph.tensor(node.input[1]),
+            let beta = graph.tensor(node.input[2]),
+            let mean = graph.tensor(node.input[3]),
+            let variance = graph.tensor(node.input[4])
+        else { throw ONNXGraph.Errors.insufficientInputs }
+
+        if #available(iOS 11.3, macOS 10.13.4, *) {
+            let dataSource = BatchNormalizationDataSource(mean: mean,
+                                                          variance: variance,
+                                                          gamma: gamma,
+                                                          beta: beta)
+
+            let batchNormalization = MPSCNNBatchNormalizationNode(source: input,
+                                                                  dataSource: dataSource)
+            graph.addFilter(batchNormalization, withOutputs: node.output)
+        } else {
+            throw ONNXGraph.Errors.unknownNodeOpType(opType: "BatchNormalization")
+        }
+    }
+}
+
 // MARK: - Neuron Layer Nodes
 
 class AbsConverter: NodeConverter {
