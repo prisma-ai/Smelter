@@ -43,4 +43,9 @@ extension Array {
 
         return data
     }
+
+    /// Returns the element at the specified index if it is within bounds, otherwise nil.
+    internal subscript (safe index: Index) -> Element? {
+        return self.indices.contains(index) ? self[index] : nil
+    }
 }
