@@ -65,8 +65,7 @@ public final class ONNXGraph {
             res[tensor.name] = tensor
         }
 
-        let _ = self
-            .register(name: "Conv", converter: ConvolutionConverter())
+        self.register(name: "Conv", converter: ConvolutionConverter())
             .register(name: "Relu", converter: ReluConverter())
             .register(name: "Elu", converter: EluConverter())
             .register(name: "Add", converter: AddConverter())
@@ -80,6 +79,15 @@ public final class ONNXGraph {
             .register(name: "Constant", converter: ConstantConverter())
             .register(name: "Exp", converter: ExpConverter())
             .register(name: "Mul", converter: MulConverter())
+            .register(name: "GlobalAveragePool", converter: GlobalAveragePoolConverter())
+
+        if #available(iOS 11.3, tvOS 11.3, macOS 10.13.3, *) {
+            self.register(name: "BatchNormalization", converter: BatchNormalizationConverter())
+        }
+        
+        if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *) {
+            self.register(name: "Reshape", converter: ReshapeConverter())
+        }
     }
 
     public convenience init(contentsOf url: URL) throws {
@@ -87,6 +95,7 @@ public final class ONNXGraph {
         try self.init(data: data)
     }
 
+    @discardableResult
     private func register(name: String, converter: NodeConverter) -> ONNXGraph {
         self.converters[name] = converter
         return self

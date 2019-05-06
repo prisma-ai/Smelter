@@ -506,3 +506,133 @@ class ConstantConverter: NodeConverter {
         graph.initTensor(name, data: value.t)
     }
 }
+
+@objc private class BNDataSource: NSObject, MPSCNNBatchNormalizationDataSource {
+    required init?(coder aDecoder: NSCoder) {
+        guard let data = aDecoder.decodeData(),
+            let other = NSKeyedUnarchiver.unarchiveObject(with: data) as? BNDataSource else {
+                return nil
+        }
+        self.nFeatureChannels = other.nFeatureChannels
+    }
+
+    private var meanW: [Float]?
+    private var varianceW: [Float]?
+    private var gammaW: [Float]?
+    private var betaW: [Float]?
+    private let nFeatureChannels: Int
+
+    func mean() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(mutating: self.meanW)
+    }
+    func variance() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(mutating: self.varianceW)
+    }
+    func gamma() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(mutating: self.gammaW)
+    }
+    func beta() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(mutating: self.betaW)
+    }
+
+    private static func toFloatArray(weight: Onnx_TensorProto, nFeatureChannels: Int) -> [Float]? {
+        switch Int(weight.dataType) {
+        case Onnx_TensorProto.DataType.float.rawValue:
+            return weight.rawData.withUnsafeBytes {
+                [Float](UnsafeBufferPointer<Float>(start: $0, count: nFeatureChannels))
+            }
+        default:
+            return nil
+        }
+    }
+
+    init(mean: Onnx_TensorProto, variance: Onnx_TensorProto, gamma: Onnx_TensorProto, beta: Onnx_TensorProto) {
+
+        let nFeatureChannels = Int(mean.dims[0])
+        self.nFeatureChannels = nFeatureChannels
+
+        self.meanW = BNDataSource.toFloatArray(weight: mean, nFeatureChannels: nFeatureChannels)
+        self.varianceW = BNDataSource.toFloatArray(weight: variance, nFeatureChannels: nFeatureChannels)
+        self.gammaW = BNDataSource.toFloatArray(weight: gamma, nFeatureChannels: nFeatureChannels)
+        self.betaW = BNDataSource.toFloatArray(weight: beta, nFeatureChannels: nFeatureChannels)
+    }
+
+    func numberOfFeatureChannels() -> Int {
+        return self.nFeatureChannels
+    }
+
+    func load() -> Bool {
+        return true
+    }
+
+    func purge() {
+        // no-op
+    }
+
+    func label() -> String? {
+        return nil
+    }
+
+    func copy(with zone: NSZone? = nil) -> Any {
+        return self.mutableCopy()
+    }
+}
+
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.3, *)
+class BatchNormalizationConverter:NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard let input = graph.output(name: node.input[0]) else {
+            throw ONNXGraph.Errors.noSuchOutput
+        }
+
+        guard let gamma = graph.tensor(node.input[1]),
+            let beta = graph.tensor(node.input[2]),
+            let mean = graph.tensor(node.input[3]),
+            let variance = graph.tensor(node.input[4])
+        else { throw ONNXGraph.Errors.insufficientInputs }
+
+        let dataSource = BNDataSource(mean: mean,
+                                      variance: variance,
+                                      gamma: gamma,
+                                      beta: beta)
+        let batchNormalization = MPSCNNBatchNormalizationNode(source: input,
+                                                              dataSource: dataSource)
+        graph.addFilter(batchNormalization, withOutputs: node.output)
+    }
+}
+
+@available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *)
+class ReshapeConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input = graph.output(name: node.input[0]),
+            let shapeTensor = graph.tensor(node.input[1])
+        else { fatalError() }
+
+        let shape = [0, -1] // shapeTensor.int64Data
+        let totalDims = 1000///Int(inputTensor.dims.reduce(1) { $0 * $1 })
+
+        var normalizedDims = (0...2).map { Int(shape[safe: $0] ?? 1) }
+
+        normalizedDims = (0...2).map {
+            let dim = normalizedDims[$0]
+            return dim == 0 ? /*Int(inputTensor.dims[$0])*/ 1 : dim
+        }
+
+        if let inferredIndex = normalizedDims.index(of: -1) {
+            let inferredDim = (0...2).reduce(totalDims) {
+                $1 == inferredIndex ? $0 : $0 / Int(normalizedDims[$1])
+            }
+
+            normalizedDims[inferredIndex] = inferredDim
+        }
+
+        let reshape = MPSNNReshapeNode(source: input,
+                                       resultWidth: normalizedDims[0],
+                                       resultHeight: normalizedDims[1],
+                                       resultFeatureChannels: normalizedDims[2])
+
+        graph.addFilter(reshape, withOutputs: node.output)
+    }
+
+}
