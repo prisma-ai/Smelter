@@ -412,6 +412,23 @@ class ConcatConverter: NodeConverter {
 
 // MARK: Poolings
 
+class GlobalAveragePoolConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input = graph.output(name: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let avgPool = MPSCNNPoolingAverageNode(source: input,
+                                               kernelWidth: Int.max,
+                                               kernelHeight: Int.max,
+                                               strideInPixelsX: 1,
+                                               strideInPixelsY: 1)
+        avgPool.paddingPolicy = GlobalPoolPadding()
+
+        graph.addFilter(avgPool, withOutputs: node.output)
+    }
+}
+
 class AveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard let input = graph.output(name: node.input[0]) else {
