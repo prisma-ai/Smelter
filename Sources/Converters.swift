@@ -78,14 +78,7 @@ enum ConvWeightArray {
 
         switch Int(weight.dataType) {
         case Onnx_TensorProto.DataType.float.rawValue:
-            self.weight = .float32(weight.rawData.withUnsafeBytes {
-                [Float](
-                    UnsafeBufferPointer<Float>(
-                        start: $0,
-                        count: outputChannels * inputChannels * kernelHeight * kernelWidth
-                    )
-                )
-            })
+            self.weight = .float32(weight.floatData)
         case Onnx_TensorProto.DataType.float16.rawValue:
             self.weight = .float16(weight.rawData.withUnsafeBytes {
                 [UInt16](
