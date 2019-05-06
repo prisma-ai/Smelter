@@ -61,8 +61,8 @@ class MulConverter: NodeConverter {
             node.input.count == 2
         else { throw ONNXGraph.Errors.noSuchOutput }
 
-        let add = MPSNNMultiplicationNode(leftSource: input1, rightSource: input2)
-        graph.addFilter(add, withOutputs: node.output)
+        let mul = MPSNNMultiplicationNode(leftSource: input1, rightSource: input2)
+        graph.addFilter(mul, withOutputs: node.output)
     }
 }
 
