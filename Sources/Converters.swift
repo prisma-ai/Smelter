@@ -667,6 +667,7 @@ class BatchNormalizationConverter:NodeConverter {
 
 @available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *)
 class ReshapeConverter: NodeConverter {
+
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -681,7 +682,7 @@ class ReshapeConverter: NodeConverter {
 
         normalizedDims = (0...2).map {
             let dim = normalizedDims[$0]
-            return dim == 0 ? shape[$0] : dim
+            return dim == 0 ? self.dim(of: inputShape, at: $0) : dim
         }
 
         if let inferredIndex = normalizedDims.index(of: -1) {
@@ -702,6 +703,20 @@ class ReshapeConverter: NodeConverter {
                            normalizedDims[1],
                            normalizedDims[2])
         graph.addFilter(reshape, outputShape: outputShape, withOutputs: node.output)
+    }
+
+    private func dim(of shape: Shape, at index: Int) -> Int {
+        switch index {
+        case 0:
+            return shape.0
+        case 1:
+            return shape.0
+        case 2:
+            return shape.0
+        case 3:
+            return shape.0
+        default: return 0
+        }
     }
 
 }
