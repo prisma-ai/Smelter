@@ -710,11 +710,11 @@ class ReshapeConverter: NodeConverter {
         case 0:
             return shape.0
         case 1:
-            return shape.0
+            return shape.1
         case 2:
-            return shape.0
+            return shape.2
         case 3:
-            return shape.0
+            return shape.3
         default: return 0
         }
     }
