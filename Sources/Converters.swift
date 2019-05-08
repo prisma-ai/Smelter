@@ -715,7 +715,7 @@ class ReshapeConverter: NodeConverter {
             return shape.2
         case 3:
             return shape.3
-        default: return 0
+        default: return 1
         }
     }
 
