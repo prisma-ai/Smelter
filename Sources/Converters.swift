@@ -681,7 +681,7 @@ class ReshapeConverter: NodeConverter {
 
         normalizedDims = (0...2).map {
             let dim = normalizedDims[$0]
-            return dim == 0 ? inputShape.channels : dim
+            return dim == 0 ? shape[$0] : dim
         }
 
         if let inferredIndex = normalizedDims.index(of: -1) {
