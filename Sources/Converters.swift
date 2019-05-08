@@ -265,12 +265,11 @@ class ConvolutionConverter: NodeConverter {
         }
 
         let paddingPolicy = (conv.paddingPolicy as! ONNXConvolutionPadding)
-        let size = paddingPolicy
-            .calculatePaddingSize(inputWidth: inputShape.width,
-                                  inputHeight: inputShape.height)
+        let paddedSize = paddingPolicy.paddedSize(inputWidth: inputShape.width,
+                                                  inputHeight: inputShape.height)
         let outputShape = Shape(channels: 1,
-                                width: size.width,
-                                height: size.height,
+                                width: paddedSize.width,
+                                height: paddedSize.height,
                                 depth: convDataSource.outputChannels)
         
         graph.addFilter(conv, outputShape: outputShape, withOutputs: node.output)
@@ -499,11 +498,11 @@ class AveragePoolConverter: NodeConverter {
                                                strideInPixelsY: Int(strides.ints[0]))
         avgPool.paddingPolicy = paddingPolicy
 
-        let paddingSize = paddingPolicy.calculatePaddingSize(inputWidth: inputShape.width,
-                                                             inputHeight: inputShape.height)
+        let paddedSize = paddingPolicy.paddedSize(inputWidth: inputShape.width,
+                                                  inputHeight: inputShape.height)
         let outputShape = (inputShape.channels,
-                           paddingSize.width,
-                           paddingSize.height,
+                           paddedSize.width,
+                           paddedSize.height,
                            inputShape.depth)
         graph.addFilter(avgPool, outputShape: outputShape, withOutputs: node.output)
     }
@@ -539,11 +538,11 @@ class MaxPoolConverter: NodeConverter {
                                                strideInPixelsY: Int(strides.ints[0]))
         maxPool.paddingPolicy = paddingPolicy
 
-        let paddingSize = paddingPolicy.calculatePaddingSize(inputWidth: inputShape.width,
-                                                             inputHeight: inputShape.height)
+        let paddedSize = paddingPolicy.paddedSize(inputWidth: inputShape.width,
+                                                  inputHeight: inputShape.height)
         let outputShape = (inputShape.channels,
-                           paddingSize.width,
-                           paddingSize.height,
+                           paddedSize.width,
+                           paddedSize.height,
                            inputShape.depth)
 
         graph.addFilter(maxPool, outputShape: outputShape, withOutputs: node.output)

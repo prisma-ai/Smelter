@@ -39,8 +39,6 @@ extension Onnx_TensorProto {
         }
     }
 
-
-
     var floats: [Float] {
         switch Int(self.dataType) {
         case DataType.int32.rawValue,
