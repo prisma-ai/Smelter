@@ -13,11 +13,7 @@
 		18C147FB2283249900EB64EF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CB498E227D73C70092971D /* ViewController.swift */; };
 		18C148112283274000EB64EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CB498C227D73C70092971D /* AppDelegate.swift */; };
 		18C148122283274800EB64EF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CB498E227D73C70092971D /* ViewController.swift */; };
-		18C148132283274B00EB64EF /* PredictionEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBF62282E211009F42DA /* PredictionEncoder.swift */; };
-		18C148142283274F00EB64EF /* ReadModelGraphResultEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBF82282E6AB009F42DA /* ReadModelGraphResultEncoder.swift */; };
-		18C148152283275000EB64EF /* ReadModelGraphResultEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBF82282E6AB009F42DA /* ReadModelGraphResultEncoder.swift */; };
-		18C148162283275400EB64EF /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBFA2282F433009F42DA /* Shaders.metal */; };
-		18C148172283275500EB64EF /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBFA2282F433009F42DA /* Shaders.metal */; };
+		18C148132283274B00EB64EF /* MobileNetEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBF62282E211009F42DA /* MobileNetEncoder.swift */; };
 		18C148192283275B00EB64EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18CB4990227D73C80092971D /* Assets.xcassets */; };
 		18C1481A2283275F00EB64EF /* ClassificationLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBFE22830694009F42DA /* ClassificationLabels.swift */; };
 		18C1481B2283276000EB64EF /* ClassificationLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBFE22830694009F42DA /* ClassificationLabels.swift */; };
@@ -28,7 +24,7 @@
 		18C148202283276A00EB64EF /* mobilenetv2-1.0-MPS-Flavour.onnx in Resources */ = {isa = PBXBuildFile; fileRef = 18C147E12283173200EB64EF /* mobilenetv2-1.0-MPS-Flavour.onnx */; };
 		18C148212283276A00EB64EF /* mobilenetv2_fused.onnx in Resources */ = {isa = PBXBuildFile; fileRef = 18DDC9052280574400723F17 /* mobilenetv2_fused.onnx */; };
 		18C148222283277500EB64EF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18CB4992227D73C80092971D /* Main.storyboard */; };
-		18C14823228328FC00EB64EF /* PredictionEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBF62282E211009F42DA /* PredictionEncoder.swift */; };
+		18C14823228328FC00EB64EF /* MobileNetEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183EDBF62282E211009F42DA /* MobileNetEncoder.swift */; };
 		18C1482522832A0400EB64EF /* TestImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18C1482422832A0400EB64EF /* TestImages.xcassets */; };
 		18C1482622832A0400EB64EF /* TestImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18C1482422832A0400EB64EF /* TestImages.xcassets */; };
 		18C1482722832A7000EB64EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CB498C227D73C70092971D /* AppDelegate.swift */; };
@@ -36,9 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		183EDBF62282E211009F42DA /* PredictionEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictionEncoder.swift; sourceTree = "<group>"; };
-		183EDBF82282E6AB009F42DA /* ReadModelGraphResultEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadModelGraphResultEncoder.swift; sourceTree = "<group>"; };
-		183EDBFA2282F433009F42DA /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		183EDBF62282E211009F42DA /* MobileNetEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileNetEncoder.swift; sourceTree = "<group>"; };
 		183EDBFE22830694009F42DA /* ClassificationLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassificationLabels.swift; sourceTree = "<group>"; };
 		18C147E12283173200EB64EF /* mobilenetv2-1.0-MPS-Flavour.onnx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "mobilenetv2-1.0-MPS-Flavour.onnx"; sourceTree = "<group>"; };
 		18C147E92283233F00EB64EF /* Smelter Demo iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Smelter Demo iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,14 +81,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		18C147E4228322A300EB64EF /* Shaders */ = {
-			isa = PBXGroup;
-			children = (
-				183EDBFA2282F433009F42DA /* Shaders.metal */,
-			);
-			path = Shaders;
-			sourceTree = "<group>";
-		};
 		18C147EA2283233F00EB64EF /* Smelter Demo iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -111,10 +97,8 @@
 			children = (
 				18CB498C227D73C70092971D /* AppDelegate.swift */,
 				18CB498E227D73C70092971D /* ViewController.swift */,
-				18C1482822832B7600EB64EF /* NSImage+Extensions.swift */,
-				183EDBF62282E211009F42DA /* PredictionEncoder.swift */,
-				183EDBF82282E6AB009F42DA /* ReadModelGraphResultEncoder.swift */,
-				18C147E4228322A300EB64EF /* Shaders */,
+				18C1482C2283723700EB64EF /* Encoders */,
+				18C1482D2283724600EB64EF /* Extensions */,
 				18CB49A0227D75670092971D /* Resources */,
 			);
 			path = Common;
@@ -129,6 +113,30 @@
 				18C1480D2283272000EB64EF /* Smelter_Demo_macOS.entitlements */,
 			);
 			path = "Smelter Demo macOS";
+			sourceTree = "<group>";
+		};
+		18C1482C2283723700EB64EF /* Encoders */ = {
+			isa = PBXGroup;
+			children = (
+				183EDBF62282E211009F42DA /* MobileNetEncoder.swift */,
+			);
+			path = Encoders;
+			sourceTree = "<group>";
+		};
+		18C1482D2283724600EB64EF /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				18C1482E2283725000EB64EF /* Cocoa */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		18C1482E2283725000EB64EF /* Cocoa */ = {
+			isa = PBXGroup;
+			children = (
+				18C1482822832B7600EB64EF /* NSImage+Extensions.swift */,
+			);
+			path = Cocoa;
 			sourceTree = "<group>";
 		};
 		18CB4980227D73C70092971D = {
@@ -277,11 +285,9 @@
 			files = (
 				18C1482722832A7000EB64EF /* AppDelegate.swift in Sources */,
 				18C1481A2283275F00EB64EF /* ClassificationLabels.swift in Sources */,
-				18C148162283275400EB64EF /* Shaders.metal in Sources */,
 				18C1481C2283276500EB64EF /* ONNXModels.swift in Sources */,
-				18C14823228328FC00EB64EF /* PredictionEncoder.swift in Sources */,
+				18C14823228328FC00EB64EF /* MobileNetEncoder.swift in Sources */,
 				18C147FB2283249900EB64EF /* ViewController.swift in Sources */,
-				18C148152283275000EB64EF /* ReadModelGraphResultEncoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,13 +295,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18C148132283274B00EB64EF /* PredictionEncoder.swift in Sources */,
+				18C148132283274B00EB64EF /* MobileNetEncoder.swift in Sources */,
 				18C148122283274800EB64EF /* ViewController.swift in Sources */,
 				18C1482922832B7600EB64EF /* NSImage+Extensions.swift in Sources */,
-				18C148142283274F00EB64EF /* ReadModelGraphResultEncoder.swift in Sources */,
 				18C148112283274000EB64EF /* AppDelegate.swift in Sources */,
 				18C1481B2283276000EB64EF /* ClassificationLabels.swift in Sources */,
-				18C148172283275500EB64EF /* Shaders.metal in Sources */,
 				18C1481D2283276500EB64EF /* ONNXModels.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
