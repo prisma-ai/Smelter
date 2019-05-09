@@ -25,7 +25,6 @@ class ViewController: UINSViewController {
 
     private enum Errors: Error {
         case cgImageCreationFailed
-        case bufferCreationFailed
         case graphResultReadingFailed
     }
 
@@ -57,9 +56,8 @@ class ViewController: UINSViewController {
 
     // MARK: - Properties
 
-    private var predictionEncoder: PredictionEncoder!
+    private var mobileNetEncoder: MobileNetEncoder!
     private var metalContext: MTLContext!
-    private var resultBuffer: MTLBuffer!
 
     private let testImages = [#imageLiteral(resourceName: "Dog"), #imageLiteral(resourceName: "Cat"), #imageLiteral(resourceName: "Car"), #imageLiteral(resourceName: "Flowers")]
     private var currentImageIndex: Int = 0
@@ -79,7 +77,6 @@ class ViewController: UINSViewController {
 
     func setup() throws {
         self.setupContext()
-        try self.setupResultsBuffer(with: self.metalContext.device)
         try self.setupEncoders()
     }
 
@@ -91,54 +88,46 @@ class ViewController: UINSViewController {
         #endif
     }
 
-    func setupResultsBuffer(with device: MTLDevice) throws {
-        var results = Array(repeating: Float(), count: classificationLabels.count)
-        guard
-            let resultBuffer = device.makeBuffer(bytes: &results,
-                                                 length: MemoryLayout<Float>.stride * results.count,
-                                                 options: .storageModeShared)
-        else { throw Errors.bufferCreationFailed }
-        self.resultBuffer = resultBuffer
-    }
-
     func setupEncoders() throws {
         let modelData = try Data(contentsOf: ONNXModels.mobilenetv2_fused)
         let configuration = ONNXGraph.Configuration(inputConstraint: .forceInputScale(scale: .bilinear))
-        self.predictionEncoder = try PredictionEncoder(context: self.metalContext,
-                                                       modelData: modelData,
-                                                       configuration: configuration)
+        self.mobileNetEncoder = try MobileNetEncoder(context: self.metalContext,
+                                                     modelData: modelData,
+                                                     configuration: configuration)
     }
 
     // MARK: - Prediction
 
     func runPredictionForImage(at index: Int) throws {
-        // Create a CGImage.
+        /// Create a CGImage.
         let image = self.testImages[index]
 
         guard
             let cgImage = image.cgImage
         else { throw Errors.cgImageCreationFailed }
 
-        // Create texture from CGImage.
+        /// Create texture from CGImage.
+        ///
+        /// Make usage `.shaderWrite` for normalization preprocessing
+        /// and `.shaderRead` for graph inference.
         let inputTexture = try self.metalContext.texture(from: cgImage,
-                                                         usage: [.shaderRead])
-        // Run the prediction on the created texture.
+                                                         usage: [.shaderWrite, .shaderRead])
+        var outputImage: MPSImage!
+        /// Run the prediction on the created texture.
         try self.metalContext.scheduleAndWait { commandBuffer in
-            try self.predictionEncoder.encode(inputTexture: inputTexture,
-                                              resultBuffer: self.resultBuffer,
-                                              in: commandBuffer)
+            outputImage = try self.mobileNetEncoder.encode(inputTexture: inputTexture,
+                                                           in: commandBuffer)
         }
-        // Read the prediction results.
+        /// Read the prediction results.
         guard
-            let output = self.resultBuffer.array(of: Float.self,
-                                                 count: classificationLabels.count)
+            let output = outputImage.toFloatArray()
         else { throw Errors.graphResultReadingFailed }
-        // Create a `[label: probability]` dictionary.
+        /// Create a `[label: probability]` dictionary.
         var predictionDictionary: [String: Float] = [:]
         for (index, element) in classificationLabels.enumerated() {
             predictionDictionary[element] = output[index]
         }
-        // Show the results.
+        /// Show the results.
         self.show(results: self.top(5, predictionDictionary),
                   imageIndex: index)
     }
