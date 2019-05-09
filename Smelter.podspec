@@ -13,4 +13,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'SwiftProtobuf', '~> 1.1.0'
   s.dependency 'Alloy/ML', '~> 0.10.1'
+  s.dependency 'Alloy/Shaders', '~> 0.10.1'
 end
