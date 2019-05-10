@@ -728,3 +728,28 @@ class ReshapeConverter: NodeConverter {
     }
 
 }
+
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
+class DropoutConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0]),
+            node.attribute.count > 0
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let ratioAttribuge = node.attribute[0]
+
+        #if DEBUG
+        precondition(ratioAttribuge.name == "ratio")
+        #endif
+
+        let ratio = ratioAttribuge.f
+
+        let dropout = MPSCNNDropoutNode(source: input, keepProbability: ratio)
+        dropout.label = "Dropout \(ratio)"
+
+        graph.addFilter(dropout, outputShape: inputShape, withOutputs: node.output)
+
+    }
+}
