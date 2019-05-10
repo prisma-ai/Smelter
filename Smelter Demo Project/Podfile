@@ -4,8 +4,9 @@ source 'https://github.com/prisma-ai/CocoaPodSpecs.git'
 use_frameworks!
 
 def internal_pods
-  pod 'Alloy/ML', '~> 0.10.3'
-  pod 'Smelter'
+  pod 'Alloy/Shaders', '~> 0.10.4'
+  pod 'Alloy/ML', '~> 0.10.4'
+  pod 'Smelter', :path => '../'
 end
 
 target 'Smelter Demo macOS' do
@@ -17,4 +18,3 @@ target 'Smelter Demo iOS' do
   platform :ios, '11.0'
   internal_pods
 end
-
