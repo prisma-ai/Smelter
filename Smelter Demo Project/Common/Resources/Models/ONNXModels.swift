@@ -11,8 +11,6 @@ import Foundation
 struct ONNXModels {
     private init () {}
 
-    static let mobilenetv2_MPS_Flavour = Bundle.main.url(forResource: "mobilenetv2-1.0-MPS-Flavour",
-                                                         withExtension: "onnx")!
-    static let mobilenetv2_fused = Bundle.main.url(forResource: "mobilenetv2_fused",
+    static let mobilenetv2_fused = Bundle.main.url(forResource: "mobilenetv2_fp16",
                                                    withExtension: "onnx")!
 }
