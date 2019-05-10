@@ -263,6 +263,9 @@ class ConvolutionConverter: NodeConverter {
         default:
             throw ONNXGraph.Errors.inconsistentState
         }
+        if #available(iOS 12.0, *) {
+            conv.accumulatorPrecision = weight.dataType == Onnx_TensorProto.DataType.float16.rawValue ? .half : .float
+        }
 
         let paddingPolicy = (conv.paddingPolicy as! ONNXConvolutionPadding)
         let paddedSize = paddingPolicy.paddedSize(inputWidth: inputShape.width,
