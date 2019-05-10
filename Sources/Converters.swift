@@ -598,10 +598,10 @@ class ConstantConverter: NodeConverter {
         self.nFeatureChannels = other.nFeatureChannels
     }
 
-    private var meanW: [Float]?
-    private var varianceW: [Float]?
-    private var gammaW: [Float]?
-    private var betaW: [Float]?
+    private var meanW: [Float] = []
+    private var varianceW: [Float] = []
+    private var gammaW: [Float] = []
+    private var betaW: [Float] = []
     private let nFeatureChannels: Int
 
     func mean() -> UnsafeMutablePointer<Float>? {
