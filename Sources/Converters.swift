@@ -159,6 +159,10 @@ enum ConvWeightArray {
     }
 
     func biasTerms() -> UnsafeMutablePointer<Float>? {
+        guard self.bias != nil else {
+            return nil
+        }
+
         return UnsafeMutablePointer(mutating: self.bias)
     }
 
@@ -263,7 +267,7 @@ class ConvolutionConverter: NodeConverter {
         default:
             throw ONNXGraph.Errors.inconsistentState
         }
-        if #available(iOS 12.0, *) {
+        if #available(iOS 12.0, OSX 10.14, *) {
             conv.accumulatorPrecision = weight.dataType == Onnx_TensorProto.DataType.float16.rawValue ? .half : .float
         }
 
