@@ -29,9 +29,8 @@ final internal class MobileNetEncoder {
                   modelData: Data,
                   configuration: ONNXGraph.Configuration) throws {
         self.normalizeKernelEncoder = try NormalizeKernelEncoder(context: context)
-        self.mobileNetGraph = try ONNXGraph(data: modelData)
-            .metalGraph(device: context.device,
-                        configuration: configuration)
+        self.mobileNetGraph = try ONNXGraph(data: modelData).metalGraph(device: context.device,
+                                                                        configuration: configuration)
     }
 
     // MARK: - Encode
@@ -41,6 +40,9 @@ final internal class MobileNetEncoder {
         let descriptor = inputTexture.descriptor
         descriptor.usage = [.shaderRead, .shaderWrite]
         descriptor.storageMode = .private
+        // we need a signed pixel format to store negative values after normalization
+        descriptor.pixelFormat = .rgba16Float
+        
         let normalizedImage = MPSTemporaryImage(commandBuffer: commandBuffer,
                                                 textureDescriptor: descriptor)
         defer { normalizedImage.readCount = 0 }
@@ -52,12 +54,14 @@ final internal class MobileNetEncoder {
                                                in: commandBuffer)
 
         commandBuffer.pushDebugGroup("MobileNet Encoder")
+        
         let inputMPSImage = MPSImage(texture: normalizedImage.texture,
                                      featureChannels: 3)
         guard
             let modelGraphResult = self.mobileNetGraph.encode(to: commandBuffer,
                                                               sourceImages: [inputMPSImage])
         else { throw Errors.graphEncodingFailed }
+
         commandBuffer.popDebugGroup()
 
         return modelGraphResult
