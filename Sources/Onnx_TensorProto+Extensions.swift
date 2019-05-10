@@ -23,19 +23,23 @@ extension Onnx_TensorProto {
         case DataType.uint32.rawValue,
              DataType.uint64.rawValue:
             return self.uint64Data.map(Int.init)
-        case DataType.float.rawValue,
-             DataType.complex64.rawValue:
+        case DataType.float.rawValue:
+            if self.floatData.count == 0 {
+                return self.rawData.withUnsafeBytes { (p: UnsafePointer<Float>) in
+                    return Array(UnsafeBufferPointer<Float>(start: p,
+                                                            count: self.length))
+                }.map(Int.init)
+            }
             return self.floatData.map(Int.init)
-        case DataType.double.rawValue,
-             DataType.complex128.rawValue:
+        case DataType.double.rawValue:
             return self.doubleData.map(Int.init)
         case DataType.float16.rawValue:
-            let count = self.rawData.count / MemoryLayout<Float16>.stride
             return (self.rawData.withUnsafeBytes {
                 float16to32(UnsafeMutableRawPointer(mutating: $0),
-                            count: count)
-                } ?? []).map(Int.init)
-        default: return []
+                            count: self.length)
+            } ?? []).map(Int.init)
+        default:
+            fatalError("Unsupported conversion rule")
         }
     }
 
@@ -53,11 +57,15 @@ extension Onnx_TensorProto {
         case DataType.uint32.rawValue,
              DataType.uint64.rawValue:
             return self.uint64Data.map(Float.init)
-        case DataType.float.rawValue,
-             DataType.complex64.rawValue:
+        case DataType.float.rawValue:
+            if self.floatData.count == 0 {
+                return self.rawData.withUnsafeBytes { (p: UnsafePointer<Float>) in
+                    return Array(UnsafeBufferPointer<Float>(start: p,
+                                                            count: self.length))
+                }
+            }
             return self.floatData
-        case DataType.double.rawValue,
-             DataType.complex128.rawValue:
+        case DataType.double.rawValue:
             return self.doubleData.map(Float.init)
         case DataType.float16.rawValue:
             let count = self.rawData.count / MemoryLayout<Float16>.stride
@@ -65,8 +73,13 @@ extension Onnx_TensorProto {
                 float16to32(UnsafeMutableRawPointer(mutating: $0),
                             count: count)
             } ?? []
-        default: return []
+        default:
+             fatalError("Unsupported conversion rule")
         }
+    }
+
+    var length: Int {
+        return Int(self.dims.reduce(1, *))
     }
 
 }
