@@ -157,8 +157,8 @@ class ViewController: UINSViewController {
         #endif
 
         return Array(prob.map { x in (x.key, x.value) }
-            .sorted(by: { a, b -> Bool in a.1 > b.1 })
-            .prefix(through: k - 1))
+             .sorted(by: { a, b -> Bool in a.1 > b.1 })
+             .prefix(through: k - 1))
     }
 
 }
