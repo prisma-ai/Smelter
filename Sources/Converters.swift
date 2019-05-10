@@ -649,7 +649,8 @@ class BatchNormalizationConverter:NodeConverter {
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
-        guard let gamma = graph.tensor(name: node.input[1]),
+        guard
+            let gamma = graph.tensor(name: node.input[1]),
             let beta = graph.tensor(name: node.input[2]),
             let mean = graph.tensor(name: node.input[3]),
             let variance = graph.tensor(name: node.input[4])
