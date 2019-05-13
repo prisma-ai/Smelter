@@ -100,28 +100,51 @@ public final class ONNXGraph {
             res[tensor.name] = tensor
         }
 
-        self.register(name: "Conv", converter: ConvolutionConverter())
-            .register(name: "Relu", converter: ReluConverter())
-            .register(name: "Elu", converter: EluConverter())
+            // Constant
+        self.register(name: "Constant", converter: ConstantConverter())
+            // Arithmetic Layer Nodes
             .register(name: "Add", converter: AddConverter())
-            .register(name: "ConvTranspose", converter: ConvolutionConverter())
-            .register(name: "Sigmoid", converter: SigmoidConverter())
-            .register(name: "Upsample", converter: UpsampleConverter())
-            .register(name: "Concat", converter: ConcatConverter())
-            .register(name: "AveragePool", converter: AveragePoolConverter())
-            .register(name: "MaxPool", converter: MaxPoolConverter())
-            .register(name: "Softmax", converter: SoftmaxConverter())
-            .register(name: "Constant", converter: ConstantConverter())
-            .register(name: "Exp", converter: ExpConverter())
+            .register(name: "Sub", converter: SubConverter())
             .register(name: "Mul", converter: MulConverter())
+            .register(name: "Div", converter: DivConverter())
+            // Convolution Layer Nodes
+            .register(name: "Conv", converter: ConvolutionConverter())
+            .register(name: "ConvTranspose", converter: ConvolutionConverter())
+            // Pooling Layer Nodes
+            .register(name: "AveragePool", converter: AveragePoolConverter())
             .register(name: "GlobalAveragePool", converter: GlobalAveragePoolConverter())
+            .register(name: "MaxPool", converter: MaxPoolConverter())
+            // Neuron Layer Nodes
+            .register(name: "Abs", converter: AbsConverter())
+            .register(name: "Elu", converter: EluConverter())
+            .register(name: "Relu", converter: ReluConverter())
+            .register(name: "Sigmoid", converter: SigmoidConverter())
+            .register(name: "HardSigmoid", converter: HardSigmoidConverter())
+            .register(name: "Softplus", converter: SoftplusConverter())
+            .register(name: "Softsign", converter: SoftsignConverter())
+            .register(name: "Tanh", converter: TanhConverter())
+            // Softmax Layer Nodes
+            .register(name: "Softmax", converter: SoftmaxConverter())
+            .register(name: "LogSoftmax", converter: LogSoftmaxConverter())
+            // Upsampling Layer Nodes
+            .register(name: "Upsample", converter: UpsampleConverter())
+            // Kernel Concatenation Nodes
+            .register(name: "Concat", converter: ConcatConverter())
 
         if #available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *) {
+                // Normalization Layer Nodes
             self.register(name: "BatchNormalization", converter: BatchNormalizationConverter())
+                // // Neuron Layer Nodes
+                .register(name: "Exp", converter: ExpConverter())
+                .register(name: "Log", converter: LogConverter())
+                .register(name: "Pow", converter: PowConverter())
+                // Dropout Layer Nodes
                 .register(name: "Dropout", converter: DropoutConverter())
+
         }
         
         if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *) {
+            // Reshape Nodes
             self.register(name: "Reshape", converter: ReshapeConverter())
         }
     }
