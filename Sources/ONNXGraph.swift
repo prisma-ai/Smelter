@@ -60,7 +60,7 @@ public final class ONNXGraph {
     private var graphProto: Onnx_GraphProto!
 
     // TODO: Probably should be returning shapes paired with names
-    internal var outputShapes: [Shape] {
+    public var outputShapes: [Shape] {
         return self.graphProto.output.compactMap { output in
             let shape = output.type.tensorType.shape.dim.map { Int($0.dimValue) }
 
