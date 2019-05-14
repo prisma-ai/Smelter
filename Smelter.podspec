@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'Smelter'
-  s.version               = '0.9.0'
+  s.version               = '0.9.1'
   s.license               = { :type => 'MIT', :file => 'LICENSE' }
   s.summary               = 'Build MPSNNGraph from ONNX MetalPerformanceShadersl file'
   s.homepage              = 'https://github.com/prisma-ai/Smelter'
