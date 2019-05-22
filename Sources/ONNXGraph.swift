@@ -119,6 +119,7 @@ public final class ONNXGraph {
             .register(name: "AveragePool", converter: AveragePoolConverter())
             .register(name: "MaxPool", converter: MaxPoolConverter())
             .register(name: "Softmax", converter: SoftmaxConverter())
+            .register(name: "LogSoftmax", converter: LogSoftmaxConverter())
             .register(name: "Constant", converter: ConstantConverter())
             .register(name: "Exp", converter: ExpConverter())
             .register(name: "Mul", converter: MulConverter())
