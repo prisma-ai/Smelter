@@ -104,6 +104,7 @@ public final class ONNXGraph {
             .register(name: "Relu", converter: ReluConverter())
             .register(name: "Elu", converter: EluConverter())
             .register(name: "Add", converter: AddConverter())
+            .register(name: "Sub", converter: SubConverter())
             .register(name: "ConvTranspose", converter: ConvolutionConverter())
             .register(name: "Sigmoid", converter: SigmoidConverter())
             .register(name: "Upsample", converter: UpsampleConverter())
