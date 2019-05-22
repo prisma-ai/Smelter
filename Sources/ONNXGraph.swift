@@ -115,7 +115,6 @@ public final class ONNXGraph {
             .register(name: "Softmax", converter: SoftmaxConverter())
             .register(name: "LogSoftmax", converter: LogSoftmaxConverter())
             .register(name: "Constant", converter: ConstantConverter())
-            .register(name: "Exp", converter: ExpConverter())
             .register(name: "Mul", converter: MulConverter())
             .register(name: "Div", converter: DivConverter())
             .register(name: "GlobalAveragePool", converter: GlobalAveragePoolConverter())
@@ -129,6 +128,7 @@ public final class ONNXGraph {
                 .register(name: "Dropout", converter: DropoutConverter())
                 .register(name: "Log", converter: LogConverter())
                 .register(name: "Pow", converter: PowConverter())
+                .register(name: "Exp", converter: ExpConverter())
         }
         
         if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *) {
