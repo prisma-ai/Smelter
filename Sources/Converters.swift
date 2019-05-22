@@ -338,6 +338,22 @@ final class AddConverter: NodeConverter {
     }
 }
 
+@available(iOS 11.0, macOS 10.13.0, tvOS 11.0, *)
+class SubConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input1 = graph.output(name: node.input[0]),
+            let input2 = graph.output(name: node.input[1]),
+            let inputShape = graph.shape(output: node.input[0]),
+            node.input.count == 2
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let sub = MPSNNSubtractionNode(leftSource: input1, rightSource: input2)
+        sub.label = "Sub"
+        graph.addFilter(sub, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
 final class MulConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
