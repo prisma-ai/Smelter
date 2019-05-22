@@ -339,7 +339,7 @@ final class AddConverter: NodeConverter {
 }
 
 @available(iOS 11.0, macOS 10.13.0, tvOS 11.0, *)
-class SubConverter: NodeConverter {
+final class SubConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input1 = graph.output(name: node.input[0]),
@@ -369,7 +369,7 @@ final class MulConverter: NodeConverter {
 }
 
 @available(iOS 11.0, macOS 10.13.0, tvOS 11.0, *)
-class DivConverter: NodeConverter {
+final class DivConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input1 = graph.output(name: node.input[0]),
