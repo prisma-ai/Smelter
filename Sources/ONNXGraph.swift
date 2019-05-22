@@ -127,6 +127,7 @@ public final class ONNXGraph {
         if #available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *) {
             self.register(name: "BatchNormalization", converter: BatchNormalizationConverter())
                 .register(name: "Dropout", converter: DropoutConverter())
+                .register(name: "Log", converter: LogConverter())
         }
         
         if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *) {
