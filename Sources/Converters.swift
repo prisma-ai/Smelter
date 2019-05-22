@@ -928,3 +928,18 @@ final class HardSigmoidConverter: NodeConverter {
         graph.addFilter(hardSigmoid, outputShape: inputShape, withOutputs: node.output)
     }
 }
+
+@available(iOS 11.0, macOS 10.13.0, tvOS 11.0, *)
+final class SoftplusConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let softplus = MPSCNNNeuronSoftPlusNode(source: input)
+        softplus.label = "Softplus"
+        graph.addFilter(softplus, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+

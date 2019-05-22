@@ -126,6 +126,7 @@ public final class ONNXGraph {
             .register(name: "Div", converter: DivConverter())
             .register(name: "GlobalAveragePool", converter: GlobalAveragePoolConverter())
             .register(name: "Abs", converter: AbsConverter())
+            .register(name: "Softplus", converter: SoftplusConverter())
 
         if #available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *) {
             self.register(name: "BatchNormalization", converter: BatchNormalizationConverter())
