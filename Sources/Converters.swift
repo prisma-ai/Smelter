@@ -11,7 +11,7 @@ enum ConvWeightArray {
 
 // MARK: Convolutions
 
-@objc private class ConvDataSource: NSObject, MPSCNNConvolutionDataSource {
+@objc private final class ConvDataSource: NSObject, MPSCNNConvolutionDataSource {
     func copy(with zone: NSZone? = nil) -> Any {
         return self.mutableCopy()
     }
@@ -172,7 +172,7 @@ enum ConvWeightArray {
     }
 }
 
-class ConvolutionConverter: NodeConverter {
+final class ConvolutionConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -276,7 +276,7 @@ class ConvolutionConverter: NodeConverter {
 
 // MARK: Activations
 
-class ReluConverter: NodeConverter {
+final class ReluConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -288,7 +288,7 @@ class ReluConverter: NodeConverter {
     }
 }
 
-class EluConverter: NodeConverter {
+final class EluConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -307,7 +307,7 @@ class EluConverter: NodeConverter {
     }
 }
 
-class ExpConverter: NodeConverter {
+final class ExpConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -324,7 +324,7 @@ class ExpConverter: NodeConverter {
     }
 }
 
-class AddConverter: NodeConverter {
+final class AddConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input1 = graph.output(name: node.input[0]),
@@ -338,7 +338,7 @@ class AddConverter: NodeConverter {
     }
 }
 
-class MulConverter: NodeConverter {
+final class MulConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input1 = graph.output(name: node.input[0]),
@@ -352,7 +352,7 @@ class MulConverter: NodeConverter {
     }
 }
 
-class SigmoidConverter: NodeConverter {
+final class SigmoidConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -435,7 +435,7 @@ class UpsampleConverter: NodeConverter {
     }
 }
 
-class ConcatConverter: NodeConverter {
+final class ConcatConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         let inputs = try (0..<node.input.count).map( { (idx: Int) -> MPSNNImageNode in
             guard
@@ -457,7 +457,7 @@ class ConcatConverter: NodeConverter {
 
 // MARK: Poolings
 
-class GlobalAveragePoolConverter: NodeConverter {
+final class GlobalAveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -476,7 +476,7 @@ class GlobalAveragePoolConverter: NodeConverter {
     }
 }
 
-class AveragePoolConverter: NodeConverter {
+final class AveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -516,7 +516,7 @@ class AveragePoolConverter: NodeConverter {
     }
 }
 
-class MaxPoolConverter: NodeConverter {
+final class MaxPoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -558,7 +558,7 @@ class MaxPoolConverter: NodeConverter {
 }
 
 
-class SoftmaxConverter: NodeConverter {
+final class SoftmaxConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -577,7 +577,7 @@ class SoftmaxConverter: NodeConverter {
 }
 
 
-class ConstantConverter: NodeConverter {
+final class ConstantConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         let name = node.output[0]
         let value = node.attribute[0]
@@ -590,7 +590,7 @@ class ConstantConverter: NodeConverter {
     }
 }
 
-@objc private class BNDataSource: NSObject, MPSCNNBatchNormalizationDataSource {
+@objc private final class BNDataSource: NSObject, MPSCNNBatchNormalizationDataSource {
     required init?(coder aDecoder: NSCoder) {
         guard let data = aDecoder.decodeData(),
             let other = NSKeyedUnarchiver.unarchiveObject(with: data) as? BNDataSource else {
@@ -650,7 +650,7 @@ class ConstantConverter: NodeConverter {
 }
 
 @available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
-class BatchNormalizationConverter:NodeConverter {
+final class BatchNormalizationConverter:NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -675,7 +675,7 @@ class BatchNormalizationConverter:NodeConverter {
 }
 
 @available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *)
-class ReshapeConverter: NodeConverter {
+final class ReshapeConverter: NodeConverter {
 
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -731,7 +731,7 @@ class ReshapeConverter: NodeConverter {
 }
 
 @available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
-class DropoutConverter: NodeConverter {
+final class DropoutConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
