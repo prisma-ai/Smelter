@@ -107,6 +107,7 @@ public final class ONNXGraph {
             .register(name: "Sub", converter: SubConverter())
             .register(name: "ConvTranspose", converter: ConvolutionConverter())
             .register(name: "Sigmoid", converter: SigmoidConverter())
+            .register(name: "HardSigmoid", converter: HardSigmoidConverter())
             .register(name: "Upsample", converter: UpsampleConverter())
             .register(name: "Concat", converter: ConcatConverter())
             .register(name: "AveragePool", converter: AveragePoolConverter())
