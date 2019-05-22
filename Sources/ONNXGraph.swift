@@ -121,6 +121,7 @@ public final class ONNXGraph {
             .register(name: "Constant", converter: ConstantConverter())
             .register(name: "Exp", converter: ExpConverter())
             .register(name: "Mul", converter: MulConverter())
+            .register(name: "Div", converter: DivConverter())
             .register(name: "GlobalAveragePool", converter: GlobalAveragePoolConverter())
 
         if #available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *) {

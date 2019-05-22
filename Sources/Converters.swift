@@ -368,6 +368,22 @@ final class MulConverter: NodeConverter {
     }
 }
 
+@available(iOS 11.0, macOS 10.13.0, tvOS 11.0, *)
+class DivConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input1 = graph.output(name: node.input[0]),
+            let input2 = graph.output(name: node.input[1]),
+            let inputShape = graph.shape(output: node.input[0]),
+            node.input.count == 2
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let div = MPSNNDivisionNode(leftSource: input1, rightSource: input2)
+        div.label = "Div"
+        graph.addFilter(div, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
 final class SigmoidConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
