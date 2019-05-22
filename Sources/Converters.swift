@@ -607,6 +607,25 @@ final class SoftmaxConverter: NodeConverter {
     }
 }
 
+@available(iOS 11.0, macOS 10.13.0, tvOS 11.0, *)
+final class LogSoftmaxConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+        let axis = node.attribute[0]
+
+        #if DEBUG
+        precondition(axis.name == "axis")
+        precondition(axis.i == 1)
+        #endif
+
+        let logSoftmax = MPSCNNLogSoftMaxNode(source: input)
+        logSoftmax.label = "LogSoftmax"
+        graph.addFilter(logSoftmax, outputShape: inputShape, withOutputs: node.output)
+    }
+}
 
 final class ConstantConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
