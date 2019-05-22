@@ -971,3 +971,17 @@ final class TanhConverter: NodeConverter {
     }
 }
 
+@available(iOS 11.3, macOS 10.13.4, tvOS 11.3, *)
+final class LogConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let log = MPSCNNNeuronLogarithmNode(source: input)
+        log.label = "Log"
+        graph.addFilter(log, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
