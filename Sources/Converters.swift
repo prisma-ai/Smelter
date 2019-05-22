@@ -880,5 +880,18 @@ class InstanceNormConverter: NodeConverter {
     func copy(with zone: NSZone? = nil) -> Any {
         return self.mutableCopy()
     }
+}
 
+@available(iOS 11.0, macOS 10.13.0, tvOS 11.0, *)
+final class AbsConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let abs = MPSCNNNeuronAbsoluteNode(source: input)
+        abs.label = "Abs"
+        graph.addFilter(abs, outputShape: inputShape, withOutputs: node.output)
+    }
 }
