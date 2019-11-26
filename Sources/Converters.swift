@@ -198,8 +198,8 @@ class ConvolutionConverter: NodeConverter {
         var kernel: Kernel?
         var dilations: Dilations?
         var strides: Strides?
-        var groups: Int?
-        var pads: Pads?
+        var groups: Int = 1
+        var pads: Pads = (0, 0, 0, 0)
         var outputPadding = Padding(height: 0, width: 0)
 
         for attr in node.attribute {
@@ -224,9 +224,7 @@ class ConvolutionConverter: NodeConverter {
         guard
             let k = kernel,
             let d = dilations,
-            let s = strides,
-            let g = groups,
-            let p = pads
+            let s = strides
         else { throw ONNXGraph.Errors.notEnoughAttributes }
 
         var conv: MPSCNNConvolutionNode!
@@ -237,7 +235,7 @@ class ConvolutionConverter: NodeConverter {
                                             bias: bias,
                                             dilations: d,
                                             strides: s,
-                                            groups: g,
+                                            groups: groups,
                                             isTranspose: false,
                                             isONNX2MPS: graph.modelFormat == .mpsFlavor)
             conv = MPSCNNConvolutionNode(source: input,
@@ -245,7 +243,7 @@ class ConvolutionConverter: NodeConverter {
             conv.paddingPolicy = ONNXConvolutionPadding(kernel: k,
                                                         strides: s,
                                                         dilations: d,
-                                                        pads: p,
+                                                        pads: pads,
                                                         outputPadding: outputPadding,
                                                         isTranspose: false)
         case "ConvTranspose":
@@ -253,7 +251,7 @@ class ConvolutionConverter: NodeConverter {
                                             bias: bias,
                                             dilations: d,
                                             strides: s,
-                                            groups: g,
+                                            groups: groups,
                                             isTranspose: true,
                                             isONNX2MPS: graph.modelFormat == .mpsFlavor)
             conv = MPSCNNConvolutionTransposeNode(source: input,
@@ -261,7 +259,7 @@ class ConvolutionConverter: NodeConverter {
             conv.paddingPolicy = ONNXConvolutionPadding(kernel: k,
                                                         strides: s,
                                                         dilations: d,
-                                                        pads: p,
+                                                        pads: pads,
                                                         outputPadding: outputPadding,
                                                         isTranspose: true)
         default:
