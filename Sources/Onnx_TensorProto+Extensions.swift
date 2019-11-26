@@ -19,6 +19,13 @@ extension Onnx_TensorProto {
              DataType.bool.rawValue:
             return self.int32Data.map(Int.init)
         case DataType.int64.rawValue:
+            if self.int64Data.count == 0 {
+                return self.rawData.withUnsafeBytes { (p: UnsafePointer<Int64>) in
+                    return Array(UnsafeBufferPointer<Int64>(start: p,
+                                                            count: self.length))
+                }.map(Int.init)
+            }
+            
             return self.int64Data.map(Int.init)
         case DataType.uint32.rawValue,
              DataType.uint64.rawValue:
