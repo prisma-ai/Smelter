@@ -47,11 +47,11 @@ final internal class MobileNetEncoder {
                                                 textureDescriptor: descriptor)
         defer { normalizedImage.readCount = 0 }
 
-        try self.normalizeKernelEncoder.encode(inputTexture: inputTexture,
-                                               outputTexture: normalizedImage.texture,
-                                               mean: MobileNetEncoder.normalizationMean,
-                                               std: MobileNetEncoder.normalizationSTD,
-                                               in: commandBuffer)
+        self.normalizeKernelEncoder.encode(sourceTexture: inputTexture,
+                                           destinationTexture: normalizedImage.texture,
+                                           mean: MobileNetEncoder.normalizationMean,
+                                           std: MobileNetEncoder.normalizationSTD,
+                                           in: commandBuffer)
 
         commandBuffer.pushDebugGroup("MobileNet Encoder")
         
