@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -329,20 +329,11 @@
 			files = (
 			);
 			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo iOS/Pods-Smelter Demo iOS-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Alloy-iOS/Alloy.framework",
-				"${BUILT_PRODUCTS_DIR}/Smelter-iOS/Smelter.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf-iOS/SwiftProtobuf.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo iOS/Pods-Smelter Demo iOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alloy.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Smelter.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo iOS/Pods-Smelter Demo iOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -377,20 +368,11 @@
 			files = (
 			);
 			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo macOS/Pods-Smelter Demo macOS-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Alloy-macOS/Alloy.framework",
-				"${BUILT_PRODUCTS_DIR}/Smelter-macOS/Smelter.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf-macOS/SwiftProtobuf.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo macOS/Pods-Smelter Demo macOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alloy.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Smelter.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo macOS/Pods-Smelter Demo macOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

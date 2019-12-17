@@ -1,22 +1,20 @@
 PODS:
-  - Alloy/Core (0.10.4)
-  - Alloy/ML (0.10.4):
+  - Alloy/Core (0.11.5)
+  - Alloy/ML (0.11.5):
     - Alloy/Core
-  - Alloy/Shaders (0.10.4):
+  - Alloy/Shaders (0.11.5):
     - Alloy/Core
-  - Smelter (1.0.0):
-    - Alloy/ML (~> 0.10.1)
-    - Alloy/Shaders (~> 0.10.1)
-    - SwiftProtobuf (~> 1.1.0)
-  - SwiftProtobuf (1.1.2)
+  - Smelter (0.9.4):
+    - Alloy/ML (~> 0.11.4)
+    - SwiftProtobuf (~> 1.7.0)
+  - SwiftProtobuf (1.7.0)
 
 DEPENDENCIES:
-  - Alloy/ML (~> 0.10.4)
-  - Alloy/Shaders (~> 0.10.4)
+  - Alloy/Shaders
   - Smelter (from `../`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Alloy
     - SwiftProtobuf
 
@@ -25,10 +23,10 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Alloy: 42c1d109a3d2a940db741bfedaba0fff31c09d24
-  Smelter: 4f0d7d0be6a3a609f13b276052c5f78e9f20fa82
-  SwiftProtobuf: 7147b8ec19c8c0694a45155d989ea9e6dedaf51f
+  Alloy: 78efb89fe02854ed5127bcae966895b9a38c62fa
+  Smelter: 2464363a5e680d28076835b5c21cf23ba8c5e128
+  SwiftProtobuf: 4fd9645e69b72cbae6ec8da5be0cdd20ca6565dd
 
-PODFILE CHECKSUM: c061d0cb15787d218600cf3bc261c7ff252b694e
+PODFILE CHECKSUM: ab4de2b937b988f46fdf75166a1d0d51cbbf33f5
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.8.4
