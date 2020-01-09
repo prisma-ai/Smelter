@@ -26,5 +26,5 @@ Pod::Spec.new do |s|
   s.swift_version = "5.1"
 
   s.dependency 'SwiftProtobuf', '~> 1.7.0'
-  s.dependency 'Alloy/ML', '~> 0.11.4'
+  s.dependency 'Alloy/ML', '~> 0.12.0'
 end
