@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   }
   s.version = '0.9.5'
 
-  s.summary = 'Build MPSNNGraph from ONNX MetalPerformanceShadersl file'
+  s.summary = 'Build MPSNNGraph from ONNX file'
   s.homepage = 'https://github.com/prisma-ai/Smelter'
 
   s.author = {
