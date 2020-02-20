@@ -1,10 +1,3 @@
-//
-//  Onnx_TensorProto+Extensions.swift
-//  Smelter
-//
-//  Created by Eugene Bokhan on 06/05/2019.
-//
-
 import Alloy
 
 extension Onnx_TensorProto {

@@ -1,10 +1,3 @@
-//
-//  ONNXGraph.swift
-//  Smelter
-//
-//  Created by Andrey Volodin on 16/04/2019.
-//
-
 import Alloy
 import MetalPerformanceShaders
 

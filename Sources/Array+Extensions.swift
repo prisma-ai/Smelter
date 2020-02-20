@@ -1,10 +1,3 @@
-//
-//  Array+Extensions.swift
-//  Smelter
-//
-//  Created by Andrey Volodin on 16/04/2019.
-//
-
 extension Array {
     public func reformatConvWeight(outputChannels: Int,
                                    inputChannels: Int,
