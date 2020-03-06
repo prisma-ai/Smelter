@@ -366,6 +366,13 @@ class SigmoidConverter: NodeConverter {
 
 
 class UpsampleConverter: NodeConverter {
+
+    let alignCorners: Bool
+
+    init(alignCorners: Bool) {
+        self.alignCorners = alignCorners
+    }
+
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -408,11 +415,14 @@ class UpsampleConverter: NodeConverter {
 
         switch mode {
         case "nearest":
-            upsample = MPSCNNUpsamplingNearestNode(
-                source: input, integerScaleFactorX: s.width, integerScaleFactorY: s.height)
+            upsample = MPSCNNUpsamplingNearestNode(source: input,
+                                                   integerScaleFactorX: s.width,
+                                                   integerScaleFactorY: s.height)
         case "bilinear", "linear":
-            upsample = MPSCNNUpsamplingBilinearNode(
-                source: input, integerScaleFactorX: s.width, integerScaleFactorY: s.height)
+            upsample = MPSCNNUpsamplingBilinearNode(source: input,
+                                                    integerScaleFactorX: s.width,
+                                                    integerScaleFactorY: s.height,
+                                                    alignCorners: self.alignCorners)
         default:
             throw ONNXGraph.Errors.unknownNodeOpType(opType: node.opType)
         }
