@@ -16,10 +16,19 @@ public final class ONNXGraph {
             case forceInputScale(scale: Scale)
         }
 
-        public let inputConstraint: InputConstraint
+        public struct BillinearUpsampling {
+            public let alignCorners: Bool
 
-        public init(inputConstraint: InputConstraint = .none) {
+            public static let `default` = BillinearUpsampling(alignCorners: true)
+        }
+
+        public let inputConstraint: InputConstraint
+        public let billinearUpsamplingConfiguration: BillinearUpsampling
+
+        public init(inputConstraint: InputConstraint = .none,
+                    billinearUpsamplingConfiguration: BillinearUpsampling = .default) {
             self.inputConstraint = inputConstraint
+            self.billinearUpsamplingConfiguration = billinearUpsamplingConfiguration
         }
     }
 
@@ -44,6 +53,7 @@ public final class ONNXGraph {
     // MARK - Properties
     
     public var modelFormat: Format = .onnx
+    public var configuration: Configuration
 
     private var converters: [String: NodeConverter] = [:]
     private var tensors: [String: Onnx_TensorProto] = [:]
@@ -79,7 +89,7 @@ public final class ONNXGraph {
 
     // MARK - Life Cycle
 
-    public init(data: Data) throws {
+    public init(data: Data, configuration: Configuration) throws {
         let modelProto = try Onnx_ModelProto(serializedData: data)
         self.graphProto = modelProto.graph
         switch modelProto.producerName {
@@ -88,6 +98,7 @@ public final class ONNXGraph {
         default:
             self.modelFormat = .onnx
         }
+        self.configuration = configuration
 
         self.tensors = self.graphProto.initializer.reduce(into: self.tensors) { (res, tensor) in
             res[tensor.name] = tensor
@@ -99,7 +110,9 @@ public final class ONNXGraph {
             .register(name: "Add", converter: AddConverter())
             .register(name: "ConvTranspose", converter: ConvolutionConverter())
             .register(name: "Sigmoid", converter: SigmoidConverter())
-            .register(name: "Upsample", converter: UpsampleConverter())
+            .register(name: "Upsample", converter: UpsampleConverter(alignCorners: self.configuration
+                                                                                       .billinearUpsamplingConfiguration
+                                                                                       .alignCorners))
             .register(name: "Concat", converter: ConcatConverter())
             .register(name: "AveragePool", converter: AveragePoolConverter())
             .register(name: "MaxPool", converter: MaxPoolConverter())
@@ -119,13 +132,15 @@ public final class ONNXGraph {
         }
     }
 
-    public convenience init(contentsOf url: URL) throws {
+    public convenience init(contentsOf url: URL,
+                            configuration: Configuration) throws {
         let data = try Data(contentsOf: url)
-        try self.init(data: data)
+        try self.init(data: data,
+                      configuration: configuration)
     }
 
-    public func metalGraph(device: MTLDevice, configuration: Configuration) throws -> MPSNNGraph {
-        try self.initOutputs(configuration: configuration)
+    public func metalGraph(device: MTLDevice) throws -> MPSNNGraph {
+        try self.initOutputs(configuration: self.configuration)
 
         for node in self.graphProto.node {
             guard let converter = self.converters[node.opType]

@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
     :type => 'MIT',
     :file => 'LICENSE'
   }
-  s.version = '0.9.6'
+  s.version = '0.10.0'
 
   s.summary = 'Build MPSNNGraph from ONNX file'
   s.homepage = 'https://github.com/prisma-ai/Smelter'
@@ -23,8 +23,8 @@ Pod::Spec.new do |s|
   }
   s.source_files = 'Sources/**/*.{swift}', '*.py'
 
-  s.swift_version = "5.1"
+  s.swift_version = "5.2"
 
   s.dependency 'SwiftProtobuf', '~> 1.7.0'
-  s.dependency 'Alloy/ML', '~> 0.13.1'
+  s.dependency 'Alloy/ML', '~> 0.14.0'
 end
