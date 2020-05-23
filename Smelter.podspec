@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
     :type => 'MIT',
     :file => 'LICENSE'
   }
-  s.version = '0.10.0'
+  s.version = '0.10.1'
 
   s.summary = 'Build MPSNNGraph from ONNX file'
   s.homepage = 'https://github.com/prisma-ai/Smelter'
@@ -27,4 +27,8 @@ Pod::Spec.new do |s|
 
   s.dependency 'SwiftProtobuf', '~> 1.7.0'
   s.dependency 'Alloy/ML', '~> 0.14.0'
+
+  s.pod_target_xcconfig = {
+    'EXCLUDED_SOURCE_FILE_NAMES' => 'ONNX2MPS.py'
+  }
 end
