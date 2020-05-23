@@ -21,14 +21,11 @@ Pod::Spec.new do |s|
     :git => 'https://github.com/prisma-ai/Smelter.git',
     :tag => s.version.to_s
   }
-  s.source_files = 'Sources/**/*.{swift}', '*.py'
+  s.source_files = 'Sources/**/*.{swift}'
+  s.preserve_path = 'ONNX2MPS.py'
 
   s.swift_version = "5.2"
 
   s.dependency 'SwiftProtobuf', '~> 1.7.0'
   s.dependency 'Alloy/ML', '~> 0.14.0'
-
-  s.pod_target_xcconfig = {
-    'EXCLUDED_SOURCE_FILE_NAMES' => 'ONNX2MPS.py'
-  }
 end
