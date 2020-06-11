@@ -800,8 +800,8 @@ class InstanceNormConverter: NodeConverter {
         guard
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0]),
-            let gamma = node.attribute.first { $0.name == "scale" }?.floats,
-            let beta = node.attribute.first { $0.name == "B" }?.floats
+            let gamma = graph.tensor(name: node.input[1])?.floats,
+            let beta = graph.tensor(name: node.input[2])?.floats
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         let dataSource = InstanceNormDataSource(channels: gamma.count,
