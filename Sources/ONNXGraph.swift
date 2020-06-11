@@ -129,6 +129,7 @@ public final class ONNXGraph {
         
         if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *) {
             self.register(name: "Reshape", converter: ReshapeConverter())
+            self.register(name: "Pad", converter: PaddingConverter())
         }
     }
 

@@ -754,3 +754,99 @@ class DropoutConverter: NodeConverter {
 
     }
 }
+
+@available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *)
+class PaddingConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0]),
+            let pads = node.attribute.first { $0.name == "pads" }?.ints.map(Int.init)
+        else { throw ONNXGraph.Errors.noSuchOutput }
+        
+        // can be constant(default), reflect, edge
+        var mode = "constant"
+        if let modeAttribute = node.attribute.first { $0.name == "mode" }?.s {
+            mode = String(data: modeAttribute, encoding: .utf8) ?? mode
+        }
+        
+        let edgeMode: MPSImageEdgeMode
+        
+        switch mode {
+        case "constant":
+            edgeMode = .constant
+        case "reflect":
+            edgeMode = .mirror
+        case "edge":
+            edgeMode = .clamp
+        default:
+            throw ONNXGraph.Errors.inconsistentState
+        }
+        
+        let pad = MPSNNPadNode(source: input,
+                               paddingSizeBefore: .init(x: pads[3], y: pads[2], channel: pads[1]),
+                               paddingSizeAfter: .init(x: pads[7], y: pads[6], channel: pads[5]),
+                               edgeMode: edgeMode)
+        let outputShape: Shape = (inputShape.channels + pads[1] + pads[5],
+                                  inputShape.width + pads[3] + pads[7],
+                                  inputShape.height + pads[2] + pads[6],
+                                  inputShape.depth)
+        graph.addFilter(pad, outputShape: outputShape, withOutputs: node.output)
+    }
+}
+
+class InstanceNormConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0]),
+            let gamma = node.attribute.first { $0.name == "scale" }?.floats,
+            let beta = node.attribute.first { $0.name == "B" }?.floats
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let dataSource = InstanceNormDataSource(channels: gamma.count,
+                                                gammas: gamma,
+                                                betas: beta)
+        
+        let instanceNorm = MPSCNNInstanceNormalizationNode(source: input,
+                                                           dataSource: dataSource)
+        graph.addFilter(instanceNorm,
+                        outputShape: inputShape,
+                        withOutputs: node.output)
+    }
+    
+}
+
+@objc class InstanceNormDataSource: NSObject, MPSCNNInstanceNormalizationDataSource {
+    
+    let numberOfFeatureChannels: Int
+    private(set) var gammas: [Float]
+    private(set) var betas: [Float]
+    
+    public init(channels: Int, gammas: [Float], betas: [Float]) {
+        self.numberOfFeatureChannels = channels
+        self.gammas = gammas
+        self.betas = betas
+    }
+    
+    func gamma() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(mutating: self.gammas)
+    }
+
+    func beta() -> UnsafeMutablePointer<Float>? {
+        return UnsafeMutablePointer(mutating: self.betas)
+    }
+
+    func label() -> String? {
+        return "Instance norm data source"
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
+    }
+
+    func copy(with zone: NSZone? = nil) -> Any {
+        return self.mutableCopy()
+    }
+
+}
