@@ -115,6 +115,7 @@ public final class ONNXGraph {
                                                                                        .billinearUpsamplingConfiguration
                                                                                        .alignCorners))
             .register(name: "HardSigmoid", converter: HardSigmoidConverter())
+            .register(name: "HardSigmoid", converter: HardSigmoidConverter())
             .register(name: "Concat", converter: ConcatConverter())
             .register(name: "AveragePool", converter: AveragePoolConverter())
             .register(name: "MaxPool", converter: MaxPoolConverter())
