@@ -328,10 +328,10 @@ final class ExpConverter: NodeConverter {
 final class AddConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count == 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
-            let inputShape = graph.shape(output: node.input[0]),
-            node.input.count == 2
+            let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         let add = MPSNNAdditionNode(leftSource: input1, rightSource: input2)
@@ -343,10 +343,10 @@ final class AddConverter: NodeConverter {
 final class SubConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count == 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
-            let inputShape = graph.shape(output: node.input[0]),
-            node.input.count == 2
+            let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         let sub = MPSNNSubtractionNode(leftSource: input1, rightSource: input2)
@@ -359,10 +359,10 @@ final class SubConverter: NodeConverter {
 final class MulConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count == 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
-            let inputShape = graph.shape(output: node.input[0]),
-            node.input.count == 2
+            let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         let add = MPSNNMultiplicationNode(leftSource: input1, rightSource: input2)
@@ -374,10 +374,10 @@ final class MulConverter: NodeConverter {
 final class DivConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count == 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
-            let inputShape = graph.shape(output: node.input[0]),
-            node.input.count == 2
+            let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         let div = MPSNNDivisionNode(leftSource: input1, rightSource: input2)
