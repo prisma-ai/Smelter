@@ -279,6 +279,7 @@ final class ConvolutionConverter: NodeConverter {
 final class ReluConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -291,6 +292,8 @@ final class ReluConverter: NodeConverter {
 final class EluConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -311,6 +314,7 @@ final class EluConverter: NodeConverter {
 final class ExpConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -323,7 +327,7 @@ final class ExpConverter: NodeConverter {
 final class AddConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
-            node.input.count == 2,
+            node.input.count >= 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
             let inputShape = graph.shape(output: node.input[0])
@@ -337,7 +341,7 @@ final class AddConverter: NodeConverter {
 final class SubConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
-            node.input.count == 2,
+            node.input.count >= 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
             let inputShape = graph.shape(output: node.input[0])
@@ -352,7 +356,7 @@ final class SubConverter: NodeConverter {
 final class MulConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
-            node.input.count == 2,
+            node.input.count >= 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
             let inputShape = graph.shape(output: node.input[0])
@@ -366,7 +370,7 @@ final class MulConverter: NodeConverter {
 final class DivConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
-            node.input.count == 2,
+            node.input.count >= 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
             let inputShape = graph.shape(output: node.input[0])
@@ -381,6 +385,7 @@ final class DivConverter: NodeConverter {
 final class SigmoidConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -400,6 +405,7 @@ final class UpsampleConverter: NodeConverter {
 
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -420,6 +426,7 @@ final class UpsampleConverter: NodeConverter {
 
         if scales == nil {
             guard
+                node.input.count >= 2,
                 let scales_tensor = graph.tensor(name: node.input[1])
             else { throw ONNXGraph.Errors.notEnoughAttributes }
             let scales_count = Int(scales_tensor.dims[0])
@@ -485,6 +492,7 @@ final class ConcatConverter: NodeConverter {
 final class GlobalAveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -504,6 +512,8 @@ final class GlobalAveragePoolConverter: NodeConverter {
 final class AveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 3,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -544,6 +554,8 @@ final class AveragePoolConverter: NodeConverter {
 final class MaxPoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 3,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -585,6 +597,8 @@ final class MaxPoolConverter: NodeConverter {
 final class SoftmaxConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -603,6 +617,8 @@ final class SoftmaxConverter: NodeConverter {
 final class LogSoftmaxConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -621,8 +637,11 @@ final class LogSoftmaxConverter: NodeConverter {
 
 final class ConstantConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
-        let name = node.output[0]
-        let value = node.attribute[0]
+
+        guard
+            let name = node.output.first,
+            let value = node.attribute.first
+        else { throw ONNXGraph.Errors.noSuchOutput }
 
         #if DEBUG
         precondition(value.name == "value")
@@ -661,7 +680,10 @@ final class ConstantConverter: NodeConverter {
         return UnsafeMutablePointer(mutating: self.betaW)
     }
 
-    init(mean: Onnx_TensorProto, variance: Onnx_TensorProto, gamma: Onnx_TensorProto, beta: Onnx_TensorProto) {
+    init(mean: Onnx_TensorProto,
+         variance: Onnx_TensorProto,
+         gamma: Onnx_TensorProto,
+         beta: Onnx_TensorProto) {
         let nFeatureChannels = Int(mean.dims[0])
         self.nFeatureChannels = nFeatureChannels
 
@@ -696,11 +718,13 @@ final class ConstantConverter: NodeConverter {
 final class BatchNormalizationConverter:NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         guard
+            node.input.count >= 5,
             let gamma = graph.tensor(name: node.input[1]),
             let beta = graph.tensor(name: node.input[2]),
             let mean = graph.tensor(name: node.input[3]),
@@ -722,6 +746,7 @@ final class ReshapeConverter: NodeConverter {
 
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 2,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0]),
             let shapeTensor = graph.tensor(name: node.input[1])
@@ -777,9 +802,10 @@ final class ReshapeConverter: NodeConverter {
 final class DropoutConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 1,
             let input = graph.output(name: node.input[0]),
-            let inputShape = graph.shape(output: node.input[0]),
-            node.attribute.count > 0
+            let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         let ratioAttribuge = node.attribute[0]
@@ -802,6 +828,7 @@ final class DropoutConverter: NodeConverter {
 class PaddingConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0]),
             let pads = node.attribute.first { $0.name == "pads" }?.ints.map(Int.init)
@@ -842,6 +869,7 @@ class PaddingConverter: NodeConverter {
 final class InstanceNormConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 3,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0]),
             let gamma = graph.tensor(name: node.input[1])?.floats,
@@ -898,6 +926,7 @@ final class InstanceNormConverter: NodeConverter {
 final class AbsConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -911,6 +940,7 @@ final class AbsConverter: NodeConverter {
 final class HardSigmoidConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -924,6 +954,7 @@ final class HardSigmoidConverter: NodeConverter {
 final class SoftplusConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -937,6 +968,7 @@ final class SoftplusConverter: NodeConverter {
 final class SoftsignConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -950,6 +982,7 @@ final class SoftsignConverter: NodeConverter {
 final class TanhConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -964,6 +997,7 @@ final class TanhConverter: NodeConverter {
 final class LogConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -978,6 +1012,7 @@ final class LogConverter: NodeConverter {
 final class PowConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
