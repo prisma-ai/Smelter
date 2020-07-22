@@ -130,7 +130,7 @@ public final class ONNXGraph {
             .register(name: "Softsign", converter: SoftsignConverter())
             .register(name: "Tanh", converter: TanhConverter())
 
-        if #available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *) {
+        if #available(iOS 11.3, tvOS 11.3, macOS 10.13.4, macCatalyst 13.0, *) {
             self.register(name: "BatchNormalization", converter: BatchNormalizationConverter())
                 .register(name: "Dropout", converter: DropoutConverter())
                 .register(name: "InstanceNormalization", converter: InstanceNormConverter())
@@ -139,7 +139,7 @@ public final class ONNXGraph {
                 .register(name: "Exp", converter: ExpConverter())
         }
         
-        if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *) {
+        if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, macCatalyst 13.0, *) {
             self.register(name: "Reshape", converter: ReshapeConverter())
                 .register(name: "Pad", converter: PaddingConverter())
         }
