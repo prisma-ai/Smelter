@@ -11,7 +11,6 @@ enum ConvWeightArray {
 
 // MARK: Convolutions
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13.0, macCatalyst 13.0, *)
 @objc private final class ConvDataSource: NSObject, MPSCNNConvolutionDataSource {
     func copy(with zone: NSZone? = nil) -> Any {
         return self.mutableCopy()
@@ -173,7 +172,6 @@ enum ConvWeightArray {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13.0, macCatalyst 13.0, *)
 final class ConvolutionConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -260,7 +258,7 @@ final class ConvolutionConverter: NodeConverter {
         default:
             throw ONNXGraph.Errors.inconsistentState
         }
-        if #available(iOS 12.0, tvOS 12.0, macOS 10.14, macCatalyst 13.0, *) {
+        if #available(iOS 12.0, tvOS 12.0, macOS 10.14, *) {
             conv.accumulatorPrecision = weight.dataType == Onnx_TensorProto.DataType.float16.rawValue ? .half : .float
         }
 
@@ -278,7 +276,6 @@ final class ConvolutionConverter: NodeConverter {
 
 // MARK: Activations
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class ReluConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -291,7 +288,6 @@ final class ReluConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class EluConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -311,7 +307,7 @@ final class EluConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, macCatalyst 13.0, *)
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
 final class ExpConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -324,7 +320,6 @@ final class ExpConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class AddConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -339,7 +334,6 @@ final class AddConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class SubConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -355,7 +349,6 @@ final class SubConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class MulConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -370,7 +363,6 @@ final class MulConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class DivConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -386,7 +378,6 @@ final class DivConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class SigmoidConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -399,7 +390,6 @@ final class SigmoidConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class UpsampleConverter: NodeConverter {
 
     let alignCorners: Bool
@@ -470,7 +460,6 @@ final class UpsampleConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class ConcatConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         let inputs = try (0..<node.input.count).map( { (idx: Int) -> MPSNNImageNode in
@@ -493,7 +482,6 @@ final class ConcatConverter: NodeConverter {
 
 // MARK: Poolings
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class GlobalAveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -513,7 +501,6 @@ final class GlobalAveragePoolConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class AveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -554,7 +541,6 @@ final class AveragePoolConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class MaxPoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -596,7 +582,6 @@ final class MaxPoolConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class SoftmaxConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -615,7 +600,6 @@ final class SoftmaxConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class LogSoftmaxConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -635,7 +619,6 @@ final class LogSoftmaxConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class ConstantConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         let name = node.output[0]
@@ -649,7 +632,7 @@ final class ConstantConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, macCatalyst 13.0, *)
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
 @objc private final class BNDataSource: NSObject, MPSCNNBatchNormalizationDataSource {
     required init?(coder aDecoder: NSCoder) {
         guard let data = aDecoder.decodeData(),
@@ -709,7 +692,7 @@ final class ConstantConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, macCatalyst 13.0, *)
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
 final class BatchNormalizationConverter:NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -734,7 +717,7 @@ final class BatchNormalizationConverter:NodeConverter {
     }
 }
 
-@available(iOS 12.1, tvOS 12.1, macOS 10.14.1, macCatalyst 13.0, *)
+@available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *)
 final class ReshapeConverter: NodeConverter {
 
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
@@ -790,7 +773,7 @@ final class ReshapeConverter: NodeConverter {
 
 }
 
-@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, macCatalyst 13.0, *)
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
 final class DropoutConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -815,7 +798,7 @@ final class DropoutConverter: NodeConverter {
     }
 }
 
-@available(iOS 12.1, tvOS 12.1, macOS 10.14.1, macCatalyst 13.0, *)
+@available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *)
 class PaddingConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -855,7 +838,7 @@ class PaddingConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, macCatalyst 13.0, *)
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
 final class InstanceNormConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -878,7 +861,7 @@ final class InstanceNormConverter: NodeConverter {
     
 }
 
-@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, macCatalyst 13.0, *)
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
 @objc final class InstanceNormDataSource: NSObject, MPSCNNInstanceNormalizationDataSource {
     
     let numberOfFeatureChannels: Int
@@ -912,7 +895,6 @@ final class InstanceNormConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class AbsConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -926,7 +908,6 @@ final class AbsConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class HardSigmoidConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -940,7 +921,6 @@ final class HardSigmoidConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class SoftplusConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -954,7 +934,6 @@ final class SoftplusConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class SoftsignConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -968,7 +947,6 @@ final class SoftsignConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.0, tvOS 11.0, macOS 10.13, macCatalyst 13.0, *)
 final class TanhConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -982,7 +960,7 @@ final class TanhConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, macCatalyst 13.0, *)
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
 final class LogConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
@@ -996,7 +974,7 @@ final class LogConverter: NodeConverter {
     }
 }
 
-@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, macCatalyst 13.0, *)
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
 final class PowConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
