@@ -319,8 +319,8 @@ final class ExpConverter: NodeConverter {
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
-        let sigmoid = MPSCNNNeuronExponentialNode(source: input)
-        graph.addFilter(sigmoid, outputShape: inputShape, withOutputs: node.output)
+        let exp = MPSCNNNeuronExponentialNode(source: input)
+        graph.addFilter(exp, outputShape: inputShape, withOutputs: node.output)
     }
 }
 
