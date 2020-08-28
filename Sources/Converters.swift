@@ -795,6 +795,7 @@ class PaddingConverter: NodeConverter {
     }
 }
 
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
 class InstanceNormConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
