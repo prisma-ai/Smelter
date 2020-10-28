@@ -108,24 +108,35 @@ public final class ONNXGraph {
             .register(name: "Relu", converter: ReluConverter())
             .register(name: "Elu", converter: EluConverter())
             .register(name: "Add", converter: AddConverter())
+            .register(name: "Sub", converter: SubConverter())
             .register(name: "ConvTranspose", converter: ConvolutionConverter())
             .register(name: "Sigmoid", converter: SigmoidConverter())
             .register(name: "Upsample", converter: UpsampleConverter(alignCorners: self.configuration
                                                                                        .billinearUpsamplingConfiguration
                                                                                        .alignCorners))
+            .register(name: "HardSigmoid", converter: HardSigmoidConverter())
+            .register(name: "HardSigmoid", converter: HardSigmoidConverter())
             .register(name: "Concat", converter: ConcatConverter())
             .register(name: "AveragePool", converter: AveragePoolConverter())
             .register(name: "MaxPool", converter: MaxPoolConverter())
             .register(name: "Softmax", converter: SoftmaxConverter())
+            .register(name: "LogSoftmax", converter: LogSoftmaxConverter())
             .register(name: "Constant", converter: ConstantConverter())
-            .register(name: "Exp", converter: ExpConverter())
             .register(name: "Mul", converter: MulConverter())
+            .register(name: "Div", converter: DivConverter())
             .register(name: "GlobalAveragePool", converter: GlobalAveragePoolConverter())
+            .register(name: "Abs", converter: AbsConverter())
+            .register(name: "Softplus", converter: SoftplusConverter())
+            .register(name: "Softsign", converter: SoftsignConverter())
+            .register(name: "Tanh", converter: TanhConverter())
 
         if #available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *) {
             self.register(name: "BatchNormalization", converter: BatchNormalizationConverter())
                 .register(name: "Dropout", converter: DropoutConverter())
                 .register(name: "InstanceNormalization", converter: InstanceNormConverter())
+                .register(name: "Log", converter: LogConverter())
+                .register(name: "Pow", converter: PowConverter())
+                .register(name: "Exp", converter: ExpConverter())
         }
         
         if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *) {

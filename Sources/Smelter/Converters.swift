@@ -11,7 +11,7 @@ enum ConvWeightArray {
 
 // MARK: Convolutions
 
-@objc private class ConvDataSource: NSObject, MPSCNNConvolutionDataSource {
+@objc private final class ConvDataSource: NSObject, MPSCNNConvolutionDataSource {
     func copy(with zone: NSZone? = nil) -> Any {
         return self.mutableCopy()
     }
@@ -172,7 +172,7 @@ enum ConvWeightArray {
     }
 }
 
-class ConvolutionConverter: NodeConverter {
+final class ConvolutionConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
             let input = graph.output(name: node.input[0]),
@@ -258,7 +258,7 @@ class ConvolutionConverter: NodeConverter {
         default:
             throw ONNXGraph.Errors.inconsistentState
         }
-        if #available(iOS 12.0, OSX 10.14, *) {
+        if #available(iOS 12.0, tvOS 12.0, macOS 10.14, *) {
             conv.accumulatorPrecision = weight.dataType == Onnx_TensorProto.DataType.float16.rawValue ? .half : .float
         }
 
@@ -276,21 +276,24 @@ class ConvolutionConverter: NodeConverter {
 
 // MARK: Activations
 
-class ReluConverter: NodeConverter {
+final class ReluConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
-        
+
         let relu = MPSCNNNeuronReLUNode(source: input)
         graph.addFilter(relu, outputShape: inputShape, withOutputs: node.output)
     }
 }
 
-class EluConverter: NodeConverter {
+final class EluConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -307,30 +310,27 @@ class EluConverter: NodeConverter {
     }
 }
 
-class ExpConverter: NodeConverter {
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
+final class ExpConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
-        if #available(iOS 11.3, macOS 10.13.4, *) {
-            let sigmoid = MPSCNNNeuronExponentialNode(source: input)
-
-            graph.addFilter(sigmoid, outputShape: inputShape, withOutputs: node.output)
-        } else {
-            throw ONNXGraph.Errors.unknownNodeOpType(opType: "Exp")
-        }
+        let exp = MPSCNNNeuronExponentialNode(source: input)
+        graph.addFilter(exp, outputShape: inputShape, withOutputs: node.output)
     }
 }
 
-class AddConverter: NodeConverter {
+final class AddConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
-            let inputShape = graph.shape(output: node.input[0]),
-            node.input.count == 2
+            let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         let add = MPSNNAdditionNode(leftSource: input1, rightSource: input2)
@@ -338,13 +338,13 @@ class AddConverter: NodeConverter {
     }
 }
 
-class MulConverter: NodeConverter {
+final class MulConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 2,
             let input1 = graph.output(name: node.input[0]),
             let input2 = graph.output(name: node.input[1]),
-            let inputShape = graph.shape(output: node.input[0]),
-            node.input.count == 2
+            let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         let add = MPSNNMultiplicationNode(leftSource: input1, rightSource: input2)
@@ -352,9 +352,10 @@ class MulConverter: NodeConverter {
     }
 }
 
-class SigmoidConverter: NodeConverter {
+final class SigmoidConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -364,8 +365,7 @@ class SigmoidConverter: NodeConverter {
     }
 }
 
-
-class UpsampleConverter: NodeConverter {
+final class UpsampleConverter: NodeConverter {
 
     let alignCorners: Bool
 
@@ -375,6 +375,7 @@ class UpsampleConverter: NodeConverter {
 
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -395,6 +396,7 @@ class UpsampleConverter: NodeConverter {
 
         if scales == nil {
             guard
+                node.input.count >= 2,
                 let scales_tensor = graph.tensor(name: node.input[1])
             else { throw ONNXGraph.Errors.notEnoughAttributes }
             let scales_count = Int(scales_tensor.dims[0])
@@ -435,7 +437,7 @@ class UpsampleConverter: NodeConverter {
     }
 }
 
-class ConcatConverter: NodeConverter {
+final class ConcatConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         let inputs = try (0..<node.input.count).map( { (idx: Int) -> MPSNNImageNode in
             guard
@@ -457,9 +459,10 @@ class ConcatConverter: NodeConverter {
 
 // MARK: Poolings
 
-class GlobalAveragePoolConverter: NodeConverter {
+final class GlobalAveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -476,9 +479,11 @@ class GlobalAveragePoolConverter: NodeConverter {
     }
 }
 
-class AveragePoolConverter: NodeConverter {
+final class AveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 3,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -516,9 +521,11 @@ class AveragePoolConverter: NodeConverter {
     }
 }
 
-class MaxPoolConverter: NodeConverter {
+final class MaxPoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 3,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -557,10 +564,11 @@ class MaxPoolConverter: NodeConverter {
     }
 }
 
-
-class SoftmaxConverter: NodeConverter {
+final class SoftmaxConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
@@ -576,11 +584,13 @@ class SoftmaxConverter: NodeConverter {
     }
 }
 
-
-class ConstantConverter: NodeConverter {
+final class ConstantConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
-        let name = node.output[0]
-        let value = node.attribute[0]
+
+        guard
+            let name = node.output.first,
+            let value = node.attribute.first
+        else { throw ONNXGraph.Errors.noSuchOutput }
 
         #if DEBUG
         precondition(value.name == "value")
@@ -590,7 +600,8 @@ class ConstantConverter: NodeConverter {
     }
 }
 
-@objc private class BNDataSource: NSObject, MPSCNNBatchNormalizationDataSource {
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
+@objc private final class BNDataSource: NSObject, MPSCNNBatchNormalizationDataSource {
     required init?(coder aDecoder: NSCoder) {
         guard let data = aDecoder.decodeData(),
             let other = NSKeyedUnarchiver.unarchiveObject(with: data) as? BNDataSource else {
@@ -650,14 +661,16 @@ class ConstantConverter: NodeConverter {
 }
 
 @available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
-class BatchNormalizationConverter:NodeConverter {
+final class BatchNormalizationConverter:NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         guard
+            node.input.count >= 5,
             let gamma = graph.tensor(name: node.input[1]),
             let beta = graph.tensor(name: node.input[2]),
             let mean = graph.tensor(name: node.input[3]),
@@ -675,10 +688,11 @@ class BatchNormalizationConverter:NodeConverter {
 }
 
 @available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *)
-class ReshapeConverter: NodeConverter {
+final class ReshapeConverter: NodeConverter {
 
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 2,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0]),
             let shapeTensor = graph.tensor(name: node.input[1])
@@ -731,12 +745,13 @@ class ReshapeConverter: NodeConverter {
 }
 
 @available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
-class DropoutConverter: NodeConverter {
+final class DropoutConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
+            node.attribute.count >= 1,
             let input = graph.output(name: node.input[0]),
-            let inputShape = graph.shape(output: node.input[0]),
-            node.attribute.count > 0
+            let inputShape = graph.shape(output: node.input[0])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
         let ratioAttribuge = node.attribute[0]
@@ -759,6 +774,7 @@ class DropoutConverter: NodeConverter {
 class PaddingConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0]),
             let pads = node.attribute.first { $0.name == "pads" }?.ints.map(Int.init)
@@ -796,9 +812,10 @@ class PaddingConverter: NodeConverter {
 }
 
 @available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
-class InstanceNormConverter: NodeConverter {
+final class InstanceNormConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         guard
+            node.input.count >= 3,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0]),
             let gamma = graph.tensor(name: node.input[1])?.floats,
@@ -818,7 +835,8 @@ class InstanceNormConverter: NodeConverter {
     
 }
 
-@objc class InstanceNormDataSource: NSObject, MPSCNNInstanceNormalizationDataSource {
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
+@objc final class InstanceNormDataSource: NSObject, MPSCNNInstanceNormalizationDataSource {
     
     let numberOfFeatureChannels: Int
     private(set) var gammas: [Float]
@@ -849,5 +867,155 @@ class InstanceNormConverter: NodeConverter {
     func copy(with zone: NSZone? = nil) -> Any {
         return self.mutableCopy()
     }
+}
 
+final class AbsConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 1,
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let abs = MPSCNNNeuronAbsoluteNode(source: input)
+        abs.label = "Abs"
+        graph.addFilter(abs, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
+final class HardSigmoidConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 1,
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let hardSigmoid = MPSCNNNeuronHardSigmoidNode(source: input)
+        hardSigmoid.label = "HardSigmoid"
+        graph.addFilter(hardSigmoid, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
+final class SoftplusConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 1,
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let softplus = MPSCNNNeuronSoftPlusNode(source: input)
+        softplus.label = "Softplus"
+        graph.addFilter(softplus, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
+final class SoftsignConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 1,
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let softsign = MPSCNNNeuronSoftSignNode(source: input)
+        softsign.label = "Softsign"
+        graph.addFilter(softsign, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
+final class TanhConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 1,
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let tanh = MPSCNNNeuronTanHNode(source: input)
+        tanh.label = "Tanh"
+        graph.addFilter(tanh, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
+final class LogConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 1,
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let log = MPSCNNNeuronLogarithmNode(source: input)
+        log.label = "Log"
+        graph.addFilter(log, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
+@available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *)
+final class PowConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 1,
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let pow = MPSCNNNeuronPowerNode(source: input)
+        pow.label = "Pow"
+        graph.addFilter(pow, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
+final class SubConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 2,
+            let input1 = graph.output(name: node.input[0]),
+            let input2 = graph.output(name: node.input[1]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let sub = MPSNNSubtractionNode(leftSource: input1, rightSource: input2)
+        sub.label = "Sub"
+        graph.addFilter(sub, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
+final class DivConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 2,
+            let input1 = graph.output(name: node.input[0]),
+            let input2 = graph.output(name: node.input[1]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let div = MPSNNDivisionNode(leftSource: input1, rightSource: input2)
+        div.label = "Div"
+        graph.addFilter(div, outputShape: inputShape, withOutputs: node.output)
+    }
+}
+
+final class LogSoftmaxConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard
+            node.input.count >= 1,
+            node.attribute.count >= 1,
+            let input = graph.output(name: node.input[0]),
+            let inputShape = graph.shape(output: node.input[0])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+        let axis = node.attribute[0]
+
+        #if DEBUG
+        precondition(axis.name == "axis")
+        precondition(axis.i == 1)
+        #endif
+
+        let logSoftmax = MPSCNNLogSoftMaxNode(source: input)
+        logSoftmax.label = "LogSoftmax"
+        graph.addFilter(logSoftmax, outputShape: inputShape, withOutputs: node.output)
+    }
 }
