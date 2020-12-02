@@ -296,14 +296,13 @@ final class EluConverter: NodeConverter {
             node.attribute.count >= 1,
             let input = graph.output(name: node.input[0]),
             let inputShape = graph.shape(output: node.input[0])
+        guard node.input.count >= 1,
+              node.attribute.count >= 1,
+              let input = graph.output(name: node.input[0]),
+              let inputShape = graph.shape(output: node.input[0]),
+              let alpha = node.attribute.first(where: { $0.name == "alpha" })?.f
         else { throw ONNXGraph.Errors.noSuchOutput }
 
-        let attr = node.attribute[0]
-        #if DEBUG
-            precondition(attr.name == "alpha")
-        #endif
-
-        let alpha = attr.f
 
         let elu = MPSCNNNeuronELUNode(source: input, a: alpha)
         graph.addFilter(elu, outputShape: inputShape, withOutputs: node.output)
@@ -395,18 +394,14 @@ final class UpsampleConverter: NodeConverter {
         }
 
         if scales == nil {
-            guard
-                node.input.count >= 2,
-                let scales_tensor = graph.tensor(name: node.input[1])
+            guard node.input.count >= 2,
+                  let scalesTensor = graph.tensor(name: node.input[1]),
+                  let scalesCount = scalesTensor.dims.first,
+                  scalesCount == 4
             else { throw ONNXGraph.Errors.notEnoughAttributes }
-            let scales_count = Int(scales_tensor.dims[0])
 
-            #if DEBUG
-            precondition(scales_count == 4)
-            #endif
-
-            let scales_values = scales_tensor.integers
-            scales = (scales_values[2], scales_values[3])
+            let scalesValues = scalesTensor.integers
+            scales = (scalesValues[2], scalesValues[3])
         }
 
         guard let _ = mode, let s = scales else {
@@ -481,30 +476,22 @@ final class GlobalAveragePoolConverter: NodeConverter {
 
 final class AveragePoolConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
-        guard
-            node.input.count >= 1,
-            node.attribute.count >= 3,
-            let input = graph.output(name: node.input[0]),
-            let inputShape = graph.shape(output: node.input[0])
+        guard node.input.count >= 1,
+              node.attribute.count >= 3,
+              let input = graph.output(name: node.input[0]),
+              let inputShape = graph.shape(output: node.input[0]),
+              let kernelShape = node.attribute.first(where: { $0.name == "kernel_shape" }),
+              let pads = node.attribute.first(where: { $0.name == "pads" }),
+              let strides = node.attribute.first(where: { $0.name == "strides" })
         else { throw ONNXGraph.Errors.noSuchOutput }
 
-        let kernel_shape = node.attribute[0]
-        let pads = node.attribute[1]
-        let strides = node.attribute[2]
-
-        #if DEBUG
-        precondition(kernel_shape.name == "kernel_shape")
-        precondition(pads.name == "pads")
-        precondition(strides.name == "strides")
-        #endif
-
         let avgPool = MPSCNNPoolingAverageNode(source: input,
-                                               kernelWidth: Int(kernel_shape.ints[1]),
-                                               kernelHeight: Int(kernel_shape.ints[0]),
+                                               kernelWidth: Int(kernelShape.ints[1]),
+                                               kernelHeight: Int(kernelShape.ints[0]),
                                                strideInPixelsX: Int(strides.ints[1]),
                                                strideInPixelsY: Int(strides.ints[0]))
-        let paddingPolicy = PyTorchPoolPadding(kernelWidth: Int(kernel_shape.ints[1]),
-                                               kernelHeight: Int(kernel_shape.ints[0]),
+        let paddingPolicy = PyTorchPoolPadding(kernelWidth: Int(kernelShape.ints[1]),
+                                               kernelHeight: Int(kernelShape.ints[0]),
                                                paddingWidth: Int(pads.ints[1]),
                                                paddingHeight: Int(pads.ints[0]),
                                                strideInPixelsX: Int(strides.ints[1]),
@@ -566,18 +553,13 @@ final class MaxPoolConverter: NodeConverter {
 
 final class SoftmaxConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
-        guard
-            node.input.count >= 1,
-            node.attribute.count >= 1,
-            let input = graph.output(name: node.input[0]),
-            let inputShape = graph.shape(output: node.input[0])
+        guard node.input.count >= 1,
+              node.attribute.count >= 1,
+              let input = graph.output(name: node.input[0]),
+              let inputShape = graph.shape(output: node.input[0]),
+              let axis = node.attribute.first(where: { $0.name == "axis" }),
+              axis.i == 1
         else { throw ONNXGraph.Errors.noSuchOutput }
-        let axis = node.attribute[0]
-
-        #if DEBUG
-        precondition(axis.name == "axis")
-        precondition(axis.i == 1)
-        #endif
 
         let softmax = MPSCNNSoftMaxNode(source: input)
         graph.addFilter(softmax, outputShape: inputShape, withOutputs: node.output)
@@ -1001,21 +983,18 @@ final class DivConverter: NodeConverter {
 
 final class LogSoftmaxConverter: NodeConverter {
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
-        guard
-            node.input.count >= 1,
-            node.attribute.count >= 1,
-            let input = graph.output(name: node.input[0]),
-            let inputShape = graph.shape(output: node.input[0])
+        guard node.input.count >= 1,
+              node.attribute.count >= 1,
+              let input = graph.output(name: node.input[0]),
+              let inputShape = graph.shape(output: node.input[0]),
+              let axis = node.attribute.first(where: { $0.name == "axis" }),
+              axis.i == 1
         else { throw ONNXGraph.Errors.noSuchOutput }
-        let axis = node.attribute[0]
-
-        #if DEBUG
-        precondition(axis.name == "axis")
-        precondition(axis.i == 1)
-        #endif
 
         let logSoftmax = MPSCNNLogSoftMaxNode(source: input)
         logSoftmax.label = "LogSoftmax"
-        graph.addFilter(logSoftmax, outputShape: inputShape, withOutputs: node.output)
+        graph.addFilter(logSoftmax,
+                        outputShape: inputShape,
+                        withOutputs: node.output)
     }
 }
