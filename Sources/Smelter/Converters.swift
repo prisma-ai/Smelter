@@ -424,12 +424,11 @@ final class UpsampleConverter: NodeConverter {
             throw ONNXGraph.Errors.unknownNodeOpType(opType: node.opType)
         }
 
-        let outputShape = (inputShape.channels,
-                           s.width,
-                           s.height,
-                           inputShape.depth)
         graph.addFilter(upsample,
-                        outputShape: outputShape,
+                        outputShape: .init(channels: inputShape.channels,
+                                           width: s.width,
+                                           height: s.height,
+                                           depth: inputShape.depth),
                         withOutputs: node.output)
     }
 }
@@ -470,9 +469,11 @@ final class GlobalAveragePoolConverter: NodeConverter {
                                                strideInPixelsY: 1)
         avgPool.paddingPolicy = GlobalPoolPadding()
 
-        let outputShape = Shape(inputShape.channels, 1, 1, inputShape.depth)
         graph.addFilter(avgPool,
-                        outputShape: outputShape,
+                        outputShape: .init(channels: inputShape.channels,
+                                           width: 1,
+                                           height: 1,
+                                           depth: inputShape.depth),
                         withOutputs: node.output)
     }
 }
@@ -503,12 +504,11 @@ final class AveragePoolConverter: NodeConverter {
 
         let paddedSize = paddingPolicy.paddedSize(inputWidth: inputShape.width,
                                                   inputHeight: inputShape.height)
-        let outputShape = (inputShape.channels,
-                           paddedSize.width,
-                           paddedSize.height,
-                           inputShape.depth)
         graph.addFilter(avgPool,
-                        outputShape: outputShape,
+                        outputShape: .init(channels: inputShape.channels,
+                                           width: paddedSize.width,
+                                           height: paddedSize.height,
+                                           depth: inputShape.depth),
                         withOutputs: node.output)
     }
 }
@@ -539,13 +539,11 @@ final class MaxPoolConverter: NodeConverter {
 
         let paddedSize = paddingPolicy.paddedSize(inputWidth: inputShape.width,
                                                   inputHeight: inputShape.height)
-        let outputShape = (inputShape.channels,
-                           paddedSize.width,
-                           paddedSize.height,
-                           inputShape.depth)
-
         graph.addFilter(maxPool,
-                        outputShape: outputShape,
+                        outputShape: .init(channels: inputShape.channels,
+                                           width: paddedSize.width,
+                                           height: paddedSize.height,
+                                           depth: inputShape.depth),
                         withOutputs: node.output)
     }
 }
@@ -688,7 +686,7 @@ final class ReshapeConverter: NodeConverter {
 
         normalizedDims = (0...2).map {
             let dim = normalizedDims[$0]
-            return dim == 0 ? self.dim(of: inputShape, at: $0) : dim
+            return dim == 0 ? inputShape.toArray()[$0] : dim
         }
 
         if let inferredIndex = normalizedDims.firstIndex(of: -1) {
@@ -703,28 +701,46 @@ final class ReshapeConverter: NodeConverter {
                                        resultWidth: normalizedDims[0],
                                        resultHeight: normalizedDims[1],
                                        resultFeatureChannels: normalizedDims[2])
-
-        let outputShape = (inputShape.channels,
-                           normalizedDims[0],
-                           normalizedDims[1],
-                           normalizedDims[2])
         graph.addFilter(reshape,
-                        outputShape: outputShape,
+                        outputShape: .init(channels: inputShape.channels,
+                                           width: normalizedDims[0],
+                                           height: normalizedDims[1],
+                                           depth: normalizedDims[2]),
                         withOutputs: node.output)
     }
 
-    private func dim(of shape: Shape, at index: Int) -> Int {
-        switch index {
-        case 0:
-            return shape.0
-        case 1:
-            return shape.1
-        case 2:
-            return shape.2
-        case 3:
-            return shape.3
-        default: return 1
+}
+
+@available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *)
+final class FlattenConverter: NodeConverter {
+
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        
+        guard node.attribute.count >= 1,
+              let input = graph.output(name: node.input[0]),
+              let inputShape = graph.shape(output: node.input[0]),
+              let axis = node.attribute.first(where: { $0.name == "axis" })?.i
+        else { throw ONNXGraph.Errors.noSuchOutput }
+        
+        let inputShapeDims = inputShape.toArray()
+        let outputDims = (0...3).map { index -> Int in
+            if index < axis {
+                return inputShapeDims[index]
+            } else if index == axis {
+                return inputShapeDims[index ... 3].reduce(1) { $0 * ($1 == 0 ? 1 : $1) }
+            } else {
+                return 0
+            }
         }
+        let outputShape = Shape(array: outputDims)
+        
+        let reshape = MPSNNReshapeNode(source: input,
+                                       resultWidth: outputShape.width,
+                                       resultHeight: outputShape.height,
+                                       resultFeatureChannels: outputShape.channels)
+        graph.addFilter(reshape,
+                        outputShape: outputShape,
+                        withOutputs: node.output)
     }
 
 }
@@ -783,12 +799,11 @@ class PaddingConverter: NodeConverter {
                                paddingSizeBefore: .init(x: pads[3], y: pads[2], channel: pads[1]),
                                paddingSizeAfter: .init(x: pads[7], y: pads[6], channel: pads[5]),
                                edgeMode: edgeMode)
-        let outputShape: Shape = (inputShape.channels + pads[1] + pads[5],
-                                  inputShape.width + pads[3] + pads[7],
-                                  inputShape.height + pads[2] + pads[6],
-                                  inputShape.depth)
         graph.addFilter(pad,
-                        outputShape: outputShape,
+                        outputShape: .init(channels: inputShape.channels + pads[1] + pads[5],
+                                           width: inputShape.width + pads[3] + pads[7],
+                                           height: inputShape.height + pads[2] + pads[6],
+                                           depth: inputShape.depth),
                         withOutputs: node.output)
     }
 }
