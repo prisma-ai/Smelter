@@ -101,6 +101,7 @@ public final class ONNXGraph {
         }
 
         self.register(name: "Conv", converter: ConvolutionConverter())
+            .register(name: "Gemm", converter: ConvolutionConverter())
             .register(name: "Relu", converter: ReluConverter())
             .register(name: "Elu", converter: EluConverter())
             .register(name: "Add", converter: AddConverter())

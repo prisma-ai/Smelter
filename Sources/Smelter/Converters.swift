@@ -26,13 +26,19 @@ enum ConvWeightArray {
          strides: (Int, Int),
          groups: Int,
          isTranspose: Bool,
+         isFullyConnected: Bool,
          isONNX2MPS: Bool) {
         var outputChannels: Int
         var kernelHeight: Int
         var kernelWidth: Int
         var inputChannels: Int
 
-        if isONNX2MPS {
+        if isFullyConnected {
+            outputChannels = Int(weight.dims[0])
+            inputChannels = Int(weight.dims[1])
+            kernelWidth = 1
+            kernelHeight = 1
+        } else if isONNX2MPS {
             outputChannels = Int(weight.dims[0])
             kernelHeight = Int(weight.dims[1])
             kernelWidth = Int(weight.dims[2])
@@ -210,6 +216,13 @@ final class ConvolutionConverter: NodeConverter {
                 break
             }
         }
+        
+        // we converting FC layer
+        if node.opType == "Gemm" {
+            kernel = (1, 1)
+            dilations = (0, 0)
+            strides = (1, 1)
+        }
 
         guard let k = kernel,
               let d = dilations,
@@ -226,6 +239,7 @@ final class ConvolutionConverter: NodeConverter {
                                             strides: s,
                                             groups: groups,
                                             isTranspose: false,
+                                            isFullyConnected: false,
                                             isONNX2MPS: graph.modelFormat == .mpsFlavor)
             conv = MPSCNNConvolutionNode(source: input,
                                          weights: convDataSource)
@@ -242,6 +256,7 @@ final class ConvolutionConverter: NodeConverter {
                                             strides: s,
                                             groups: groups,
                                             isTranspose: true,
+                                            isFullyConnected: false,
                                             isONNX2MPS: graph.modelFormat == .mpsFlavor)
             conv = MPSCNNConvolutionTransposeNode(source: input,
                                                   weights: convDataSource)
@@ -251,6 +266,18 @@ final class ConvolutionConverter: NodeConverter {
                                                         pads: pads,
                                                         outputPadding: outputPadding,
                                                         isTranspose: true)
+        case "Gemm":
+            convDataSource = ConvDataSource(weight: weight,
+                                            bias: bias,
+                                            dilations: d,
+                                            strides: s,
+                                            groups: groups,
+                                            isTranspose: false,
+                                            isFullyConnected: true,
+                                            isONNX2MPS: graph.modelFormat == .mpsFlavor)
+            conv = MPSCNNFullyConnectedNode(source: input,
+                                            weights: convDataSource)
+
         default:
             throw ONNXGraph.Errors.inconsistentState
         }
@@ -258,13 +285,20 @@ final class ConvolutionConverter: NodeConverter {
             conv.accumulatorPrecision = weight.dataType == Onnx_TensorProto.DataType.float16.rawValue ? .half : .float
         }
 
-        let paddingPolicy = (conv.paddingPolicy as! ONNXConvolutionPadding)
-        let paddedSize = paddingPolicy.paddedSize(inputWidth: inputShape.width,
-                                                  inputHeight: inputShape.height)
-        let outputShape = Shape(channels: 1,
+        let outputShape: Shape
+        if let paddingPolicy = conv.paddingPolicy as? ONNXConvolutionPadding {
+            let paddedSize = paddingPolicy.paddedSize(inputWidth: inputShape.width,
+                                                      inputHeight: inputShape.height)
+            outputShape = .init(channels: 1,
                                 width: paddedSize.width,
                                 height: paddedSize.height,
                                 depth: convDataSource.outputChannels)
+        } else {
+            outputShape = .init(channels: 1,
+                                width: 1,
+                                height: 1,
+                                depth: convDataSource.outputChannels)
+        }
         
         graph.addFilter(conv,
                         outputShape: outputShape,
