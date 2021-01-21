@@ -460,8 +460,8 @@ final class UpsampleConverter: NodeConverter {
 
         graph.addFilter(upsample,
                         outputShape: .init(channels: inputShape.channels,
-                                           width: s.width,
-                                           height: s.height,
+                                           width: s.width * inputShape.width,
+                                           height: s.height * inputShape.height,
                                            depth: inputShape.depth),
                         withOutputs: node.output)
     }
@@ -763,7 +763,7 @@ final class FlattenConverter: NodeConverter {
             } else if index == axis {
                 return inputShapeDims[index ... 3].reduce(1) { $0 * ($1 == 0 ? 1 : $1) }
             } else {
-                return 0
+                return 1
             }
         }
         let outputShape = Shape(array: outputDims)
