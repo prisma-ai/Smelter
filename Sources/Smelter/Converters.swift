@@ -144,9 +144,6 @@ enum ConvWeightArray {
     }
 
     func biasTerms() -> UnsafeMutablePointer<Float>? {
-        guard self.bias != nil
-        else { return nil }
-
         return self.bias?.unsafeMutablePointer
     }
 
