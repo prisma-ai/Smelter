@@ -105,7 +105,7 @@ enum ConvWeightArray {
             case Onnx_TensorProto.DataType.float.rawValue:
                 self.bias = bias.rawData.array()
             case Onnx_TensorProto.DataType.float16.rawValue:
-                self.bias = bias.rawData.convertingFloat16toFloat32(count: outputChannels)
+                self.bias = bias.rawData.convertingFloat16toFloat32()
             default:
                 break
             }

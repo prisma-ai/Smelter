@@ -30,7 +30,7 @@ extension Onnx_TensorProto {
         case DataType.double.rawValue:
             return self.doubleData.map(Int.init)
         case DataType.float16.rawValue:
-            return self.rawData.convertingFloat16toFloat32(count: self.length).map(Int.init)
+            return self.rawData.convertingFloat16toFloat32().map(Int.init)
         default:
             fatalError("Unsupported conversion rule")
         }
@@ -58,8 +58,7 @@ extension Onnx_TensorProto {
         case DataType.double.rawValue:
             return self.doubleData.map(Float.init)
         case DataType.float16.rawValue:
-            let count = self.rawData.count / MemoryLayout<Float16>.stride
-            return self.rawData.convertingFloat16toFloat32(count: count)
+            return self.rawData.convertingFloat16toFloat32()
         default:
              fatalError("Unsupported conversion rule")
         }

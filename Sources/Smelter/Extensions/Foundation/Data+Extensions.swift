@@ -13,7 +13,8 @@ extension Data {
         return result
     }
 
-    func convertingFloat16toFloat32(count: Int) -> [Float] {
+    func convertingFloat16toFloat32() -> [Float] {
+        let count = self.count / MemoryLayout<Float16>.stride
         let result = self.withUnsafeBytes {
             $0.baseAddress.flatMap {
                 float16to32(UnsafeMutableRawPointer(mutating: $0), count: count)
