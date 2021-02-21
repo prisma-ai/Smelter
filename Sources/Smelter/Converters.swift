@@ -82,14 +82,7 @@ enum ConvWeightArray {
         case Onnx_TensorProto.DataType.float.rawValue:
             self.weight = .float32(weight.floats)
         case Onnx_TensorProto.DataType.float16.rawValue:
-            self.weight = .float16(weight.rawData.withUnsafeBytes {
-                [UInt16](
-                    UnsafeBufferPointer<UInt16>(
-                        start: $0,
-                        count: outputChannels * inputChannels * kernelHeight * kernelWidth
-                    )
-                )
-            })
+            self.weight = .float16(weight.rawData.array())
         default:
             self.weight = .invalid
         }
@@ -116,9 +109,9 @@ enum ConvWeightArray {
         if let bias = bias {
             switch Int(bias.dataType) {
             case Onnx_TensorProto.DataType.float.rawValue:
-                self.bias = bias.rawData.withUnsafeBytes { [Float](UnsafeBufferPointer<Float>(start: $0, count: outputChannels)) }
+                self.bias = bias.rawData.array()
             case Onnx_TensorProto.DataType.float16.rawValue:
-                self.bias = bias.rawData.withUnsafeBytes { float16to32(UnsafeMutableRawPointer(mutating: $0), count: outputChannels) }
+                self.bias = bias.rawData.convertingFloat16toFloat32()
             default:
                 break
             }
@@ -145,19 +138,16 @@ enum ConvWeightArray {
     func weights() -> UnsafeMutableRawPointer {
         switch self.weight {
         case let .float32(array):
-            return UnsafeMutableRawPointer(mutating: array)
+            return array.unsafeMutableRawPointer!
         case let .float16(array):
-            return UnsafeMutableRawPointer(mutating: array)
+            return array.unsafeMutableRawPointer!
         case .invalid:
-            return UnsafeMutableRawPointer(mutating: [])
+            return [0].unsafeMutableRawPointer!
         }
     }
 
     func biasTerms() -> UnsafeMutablePointer<Float>? {
-        guard self.bias != nil
-        else { return nil }
-
-        return UnsafeMutablePointer(mutating: self.bias)
+        return self.bias?.unsafeMutablePointer
     }
 
     func load() -> Bool {
@@ -627,16 +617,16 @@ final class ConstantConverter: NodeConverter {
     private let nFeatureChannels: Int
 
     func mean() -> UnsafeMutablePointer<Float>? {
-        return UnsafeMutablePointer(mutating: self.meanW)
+        return self.meanW.unsafeMutablePointer
     }
     func variance() -> UnsafeMutablePointer<Float>? {
-        return UnsafeMutablePointer(mutating: self.varianceW)
+        return self.varianceW.unsafeMutablePointer
     }
     func gamma() -> UnsafeMutablePointer<Float>? {
-        return UnsafeMutablePointer(mutating: self.gammaW)
+        return self.gammaW.unsafeMutablePointer
     }
     func beta() -> UnsafeMutablePointer<Float>? {
-        return UnsafeMutablePointer(mutating: self.betaW)
+        return self.betaW.unsafeMutablePointer
     }
 
     init(mean: Onnx_TensorProto,
@@ -881,11 +871,11 @@ final class InstanceNormConverter: NodeConverter {
     }
     
     func gamma() -> UnsafeMutablePointer<Float>? {
-        return UnsafeMutablePointer(mutating: self.gammas)
+        return self.gammas.unsafeMutablePointer
     }
 
     func beta() -> UnsafeMutablePointer<Float>? {
-        return UnsafeMutablePointer(mutating: self.betas)
+        return self.betas.unsafeMutablePointer
     }
 
     func label() -> String? {

@@ -13,10 +13,8 @@ extension Onnx_TensorProto {
             return self.int32Data.map(Int.init)
         case DataType.int64.rawValue:
             if self.int64Data.count == 0 {
-                return self.rawData.withUnsafeBytes { (p: UnsafePointer<Int64>) in
-                    return Array(UnsafeBufferPointer<Int64>(start: p,
-                                                            count: self.length))
-                }.map(Int.init)
+                let int64Array: [Int64] = self.rawData.array()
+                return int64Array.map(Int.init)
             }
             
             return self.int64Data.map(Int.init)
@@ -25,19 +23,14 @@ extension Onnx_TensorProto {
             return self.uint64Data.map(Int.init)
         case DataType.float.rawValue:
             if self.floatData.count == 0 {
-                return self.rawData.withUnsafeBytes { (p: UnsafePointer<Float>) in
-                    return Array(UnsafeBufferPointer<Float>(start: p,
-                                                            count: self.length))
-                }.map(Int.init)
+                let floatArray: [Float] = self.rawData.array()
+                return floatArray.map(Int.init)
             }
             return self.floatData.map(Int.init)
         case DataType.double.rawValue:
             return self.doubleData.map(Int.init)
         case DataType.float16.rawValue:
-            return (self.rawData.withUnsafeBytes {
-                float16to32(UnsafeMutableRawPointer(mutating: $0),
-                            count: self.length)
-            } ?? []).map(Int.init)
+            return self.rawData.convertingFloat16toFloat32().map(Int.init)
         default:
             fatalError("Unsupported conversion rule")
         }
@@ -59,20 +52,13 @@ extension Onnx_TensorProto {
             return self.uint64Data.map(Float.init)
         case DataType.float.rawValue:
             if self.floatData.count == 0 {
-                return self.rawData.withUnsafeBytes { (p: UnsafePointer<Float>) in
-                    return Array(UnsafeBufferPointer<Float>(start: p,
-                                                            count: self.length))
-                }
+                return self.rawData.array()
             }
             return self.floatData
         case DataType.double.rawValue:
             return self.doubleData.map(Float.init)
         case DataType.float16.rawValue:
-            let count = self.rawData.count / MemoryLayout<Float16>.stride
-            return self.rawData.withUnsafeBytes {
-                float16to32(UnsafeMutableRawPointer(mutating: $0),
-                            count: count)
-            } ?? []
+            return self.rawData.convertingFloat16toFloat32()
         default:
              fatalError("Unsupported conversion rule")
         }
