@@ -76,10 +76,7 @@ enum ConvWeightArray {
         case Onnx_TensorProto.DataType.float.rawValue:
             self.weight = .float32(weight.floats)
         case Onnx_TensorProto.DataType.float16.rawValue:
-            let count: Int = outputChannels * inputChannels * kernelHeight * kernelWidth
-            let array = weight.rawData.convertToArrayOfType(UInt16.self, length: count)
-
-            self.weight = .float16(array)
+            self.weight = .float16(weight.rawData.array())
         default:
             self.weight = .invalid
         }
@@ -106,9 +103,9 @@ enum ConvWeightArray {
         if let bias = bias {
             switch Int(bias.dataType) {
             case Onnx_TensorProto.DataType.float.rawValue:
-                self.bias = bias.rawData.convertToArrayOfType(Float.self, length: outputChannels)
+                self.bias = bias.rawData.array()
             case Onnx_TensorProto.DataType.float16.rawValue:
-                self.bias = bias.rawData.convertF16toF32(count: outputChannels)
+                self.bias = bias.rawData.convertingFloat16ToFloat32(count: outputChannels)
             default:
                 break
             }
