@@ -1,12 +1,13 @@
 import Alloy
 
 extension Data {
-    func array<T>(length: Int) -> [T] {
+    func array<T>() -> [T] {
+        let count = self.count / MemoryLayout<T>.stride
         let result = self.withUnsafeBytes {
             $0.baseAddress.flatMap {
-                $0.bindMemory(to: T.self, capacity: length)
+                $0.bindMemory(to: T.self, capacity: count)
             }.flatMap {
-                Array(UnsafeBufferPointer<T>(start: $0, count: length))
+                Array(UnsafeBufferPointer<T>(start: $0, count: count))
             }
         } ?? []
         return result

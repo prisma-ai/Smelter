@@ -13,8 +13,8 @@ extension Onnx_TensorProto {
             return self.int32Data.map(Int.init)
         case DataType.int64.rawValue:
             if self.int64Data.count == 0 {
-                let array: [Int64] = self.rawData.array(length: self.length)
-                return array.map(Int.init)
+                let int64Array: [Int64] = self.rawData.array()
+                return int64Array.map(Int.init)
             }
             
             return self.int64Data.map(Int.init)
@@ -23,8 +23,8 @@ extension Onnx_TensorProto {
             return self.uint64Data.map(Int.init)
         case DataType.float.rawValue:
             if self.floatData.count == 0 {
-                let floats: [Float] = self.rawData.array(length: self.length)
-                return floats.map(Int.init)
+                let floatArray: [Float] = self.rawData.array()
+                return floatArray.map(Int.init)
             }
             return self.floatData.map(Int.init)
         case DataType.double.rawValue:
@@ -52,8 +52,7 @@ extension Onnx_TensorProto {
             return self.uint64Data.map(Float.init)
         case DataType.float.rawValue:
             if self.floatData.count == 0 {
-                let floats: [Float] = self.rawData.array(length: self.length)
-                return floats
+                return self.rawData.array()
             }
             return self.floatData
         case DataType.double.rawValue:
