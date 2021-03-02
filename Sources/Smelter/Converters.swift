@@ -90,17 +90,17 @@ enum ConvWeightArray {
         if !isONNX2MPS {
             switch self.weight {
             case let .float32(array):
-                self.weight = .float32(array.reformatConvWeight(outputChannels: outputChannels,
-                                                                inputChannels: inputChannels,
-                                                                kernelHeight: kernelHeight,
-                                                                kernelWidth: kernelWidth,
-                                                                isTranspose: isTranspose))
+                self.weight = .float32(array.reformatingConvolutionWeight(outputChannels: outputChannels,
+                                                                          inputChannels: inputChannels,
+                                                                          kernelHeight: kernelHeight,
+                                                                          kernelWidth: kernelWidth,
+                                                                          isTranspose: isTranspose))
             case let .float16(array):
-                self.weight = .float16(array.reformatConvWeight(outputChannels: outputChannels,
-                                                                inputChannels: inputChannels,
-                                                                kernelHeight: kernelHeight,
-                                                                kernelWidth: kernelWidth,
-                                                                isTranspose: isTranspose))
+                self.weight = .float16(array.reformatingConvolutionWeight(outputChannels: outputChannels,
+                                                                          inputChannels: inputChannels,
+                                                                          kernelHeight: kernelHeight,
+                                                                          kernelWidth: kernelWidth,
+                                                                          isTranspose: isTranspose))
             case .invalid:
                 break
             }
@@ -210,7 +210,7 @@ final class ConvolutionConverter: NodeConverter {
         // we converting FC layer
         if node.opType == "Gemm" {
             kernel = (1, 1)
-            dilations = (0, 0)
+            dilations = (1, 1)
             strides = (1, 1)
         }
 
@@ -737,7 +737,6 @@ final class ReshapeConverter: NodeConverter {
 
 @available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *)
 final class FlattenConverter: NodeConverter {
-
     func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
         
         guard node.attribute.count >= 1,
@@ -747,23 +746,25 @@ final class FlattenConverter: NodeConverter {
         else { throw ONNXGraph.Errors.noSuchOutput }
         
         let inputShapeDims = inputShape.toArray()
-        let outputDims = (0...3).map { index -> Int in
-            if index < axis {
-                return inputShapeDims[index]
-            } else if index == axis {
-                return inputShapeDims[index ... 3].reduce(1) { $0 * ($1 == 0 ? 1 : $1) }
-            } else {
-                return 1
-            }
+        let totalElements = inputShapeDims.reduce(1, *)
+        let outputWidth = 1
+        let outputHeight = 1
+        var outputChannels = 1
+        
+        switch axis {
+        case 1: outputChannels = totalElements
+        default: fatalError("other axises are not supported")
         }
-        let outputShape = Shape(array: outputDims)
         
         let reshape = MPSNNReshapeNode(source: input,
-                                       resultWidth: outputShape.width,
-                                       resultHeight: outputShape.height,
-                                       resultFeatureChannels: outputShape.channels)
+                                       resultWidth: outputWidth,
+                                       resultHeight: outputHeight,
+                                       resultFeatureChannels: outputChannels)
         graph.addFilter(reshape,
-                        outputShape: outputShape,
+                        outputShape: .init(channels: outputChannels,
+                                           width: outputWidth,
+                                           height: outputHeight,
+                                           depth: 1),
                         withOutputs: node.output)
     }
 
