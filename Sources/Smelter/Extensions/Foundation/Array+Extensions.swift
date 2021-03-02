@@ -1,14 +1,15 @@
 extension Array {
-    public func reformatConvWeight(outputChannels: Int,
-                                   inputChannels: Int,
-                                   kernelHeight: Int,
-                                   kernelWidth: Int,
-                                   isTranspose: Bool) -> [Element] {
-        var data: [Element] = [Element](repeating: self[0], count: self.count)
-        for oc in 0..<outputChannels {
-            for ic in 0..<inputChannels {
-                for kh in 0..<kernelHeight {
-                    for kw in 0..<kernelWidth {
+    func reformatingConvolutionWeight(outputChannels: Int,
+                                      inputChannels: Int,
+                                      kernelHeight: Int,
+                                      kernelWidth: Int,
+                                      isTranspose: Bool) -> [Element] {
+        var data: [Element] = [Element](repeating: self[0],
+                                        count: self.count)
+        for oc in 0 ..< outputChannels {
+            for ic in 0 ..< inputChannels {
+                for kh in 0 ..< kernelHeight {
+                    for kw in 0 ..< kernelWidth {
                         let inputIdx: Int
                         let outputIdx: Int
 

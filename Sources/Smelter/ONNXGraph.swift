@@ -67,21 +67,17 @@ public final class ONNXGraph {
         return self.graphProto.output.compactMap { output in
             let shape = output.type.tensorType.shape.dim.map { Int($0.dimValue) }
 
-            var channels, height, width, depth: Int
             switch shape.count {
             case 3:
-                channels = shape[0]
-                height = shape[1]
-                width = shape[2]
-                depth = 1
-
-                return (channels, width, height, depth)
+                return .init(channels: shape[0],
+                             width: shape[1],
+                             height: shape[2],
+                             depth: 1)
             case 4:
-                channels = shape[1]
-                height = shape[2]
-                width = shape[3]
-                depth = 1
-                return (channels, width, height, depth)
+                return .init(channels: shape[1],
+                             width: shape[2],
+                             height: shape[3],
+                             depth: 1)
             default: return nil
             }
         }
@@ -105,6 +101,7 @@ public final class ONNXGraph {
         }
 
         self.register(name: "Conv", converter: ConvolutionConverter())
+            .register(name: "Gemm", converter: ConvolutionConverter())
             .register(name: "Relu", converter: ReluConverter())
             .register(name: "Elu", converter: EluConverter())
             .register(name: "Add", converter: AddConverter())
@@ -141,7 +138,9 @@ public final class ONNXGraph {
         
         if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *) {
             self.register(name: "Reshape", converter: ReshapeConverter())
+                .register(name: "Flatten", converter: FlattenConverter())
                 .register(name: "Pad", converter: PaddingConverter())
+            
         }
     }
 
@@ -220,7 +219,10 @@ public final class ONNXGraph {
                     }
                 }
 
-                self.nodeShapes[valueInfo.name] = Shape(1, width, height, channels)
+                self.nodeShapes[valueInfo.name] = .init(channels: 1,
+                                                        width: width,
+                                                        height: height,
+                                                        depth: channels)
             }
         }
     }
@@ -235,7 +237,9 @@ public final class ONNXGraph {
         self.tensors[name] = data
     }
 
-    internal func addFilter(_ filter: MPSNNFilterNode, outputShape: Shape, withOutputs outputs: [String]) {
+    internal func addFilter(_ filter: MPSNNFilterNode,
+                            outputShape: Shape,
+                            withOutputs outputs: [String]) {
         self.filters.append(filter)
         for output in outputs {
             self.nodeShapes[output] = outputShape
