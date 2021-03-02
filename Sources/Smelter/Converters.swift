@@ -90,17 +90,17 @@ enum ConvWeightArray {
         if !isONNX2MPS {
             switch self.weight {
             case let .float32(array):
-                self.weight = .float32(array.reformatConvWeight(outputChannels: outputChannels,
-                                                                inputChannels: inputChannels,
-                                                                kernelHeight: kernelHeight,
-                                                                kernelWidth: kernelWidth,
-                                                                isTranspose: isTranspose))
+                self.weight = .float32(array.reformatingConvolutionWeight(outputChannels: outputChannels,
+                                                                          inputChannels: inputChannels,
+                                                                          kernelHeight: kernelHeight,
+                                                                          kernelWidth: kernelWidth,
+                                                                          isTranspose: isTranspose))
             case let .float16(array):
-                self.weight = .float16(array.reformatConvWeight(outputChannels: outputChannels,
-                                                                inputChannels: inputChannels,
-                                                                kernelHeight: kernelHeight,
-                                                                kernelWidth: kernelWidth,
-                                                                isTranspose: isTranspose))
+                self.weight = .float16(array.reformatingConvolutionWeight(outputChannels: outputChannels,
+                                                                          inputChannels: inputChannels,
+                                                                          kernelHeight: kernelHeight,
+                                                                          kernelWidth: kernelWidth,
+                                                                          isTranspose: isTranspose))
             case .invalid:
                 break
             }

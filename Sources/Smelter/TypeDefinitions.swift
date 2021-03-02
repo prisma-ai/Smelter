@@ -29,5 +29,3 @@ extension Shape: ArrayRepresentable {
     
     init() { self = .zero }
 }
-
-
