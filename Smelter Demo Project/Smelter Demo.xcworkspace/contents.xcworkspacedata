@@ -2,9 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Smelter Demo.xcodeproj">
+      location = "group:..">
    </FileRef>
    <FileRef
-      location = "group:Pods/Pods.xcodeproj">
+      location = "group:../../../s1ddok/Alloy">
+   </FileRef>
+   <FileRef
+      location = "group:Smelter Demo.xcodeproj">
    </FileRef>
 </Workspace>

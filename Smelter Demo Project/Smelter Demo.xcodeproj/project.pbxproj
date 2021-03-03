@@ -3,10 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		186BAEC425C808230041D6EF /* Alloy in Frameworks */ = {isa = PBXBuildFile; productRef = 186BAEC325C808230041D6EF /* Alloy */; };
+		186BAEC925C808380041D6EF /* Alloy in Frameworks */ = {isa = PBXBuildFile; productRef = 186BAEC825C808380041D6EF /* Alloy */; };
+		186BAECD25C808430041D6EF /* Smelter in Frameworks */ = {isa = PBXBuildFile; productRef = 186BAECC25C808430041D6EF /* Smelter */; };
+		186BAECF25C808480041D6EF /* Smelter in Frameworks */ = {isa = PBXBuildFile; productRef = 186BAECE25C808480041D6EF /* Smelter */; };
 		18C147F12283233F00EB64EF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18C147EF2283233F00EB64EF /* Main.storyboard */; };
 		18C147F32283234000EB64EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18C147F22283234000EB64EF /* Assets.xcassets */; };
 		18C147F62283234000EB64EF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18C147F42283234000EB64EF /* LaunchScreen.storyboard */; };
@@ -27,8 +31,6 @@
 		18C1482622832A0400EB64EF /* TestImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18C1482422832A0400EB64EF /* TestImages.xcassets */; };
 		18C1482722832A7000EB64EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CB498C227D73C70092971D /* AppDelegate.swift */; };
 		18C1482922832B7600EB64EF /* NSImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C1482822832B7600EB64EF /* NSImage+Extensions.swift */; };
-		A547FF5811626DACB80C54F5 /* Pods_Smelter_Demo_macOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D553B76BF96684140FCC1D21 /* Pods_Smelter_Demo_macOS.framework */; };
-		F5E5DC7CA9E53C31F67149A3 /* Pods_Smelter_Demo_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A9DFC5A5C0EBEEDD09B81D0 /* Pods_Smelter_Demo_iOS.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,12 +52,6 @@
 		18CB4993227D73C80092971D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		18CB499C227D75410092971D /* ONNXModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ONNXModels.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		18DDC9052280574400723F17 /* mobilenetv2_fp16.onnx */ = {isa = PBXFileReference; lastKnownFileType = file; path = mobilenetv2_fp16.onnx; sourceTree = "<group>"; };
-		42F379C63C7FF658825B6D42 /* Pods-Smelter Demo macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Smelter Demo macOS.release.xcconfig"; path = "Target Support Files/Pods-Smelter Demo macOS/Pods-Smelter Demo macOS.release.xcconfig"; sourceTree = "<group>"; };
-		49C441839C070974A310B13E /* Pods-Smelter Demo iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Smelter Demo iOS.debug.xcconfig"; path = "Target Support Files/Pods-Smelter Demo iOS/Pods-Smelter Demo iOS.debug.xcconfig"; sourceTree = "<group>"; };
-		8A9DFC5A5C0EBEEDD09B81D0 /* Pods_Smelter_Demo_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Smelter_Demo_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D553B76BF96684140FCC1D21 /* Pods_Smelter_Demo_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Smelter_Demo_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D68A39644C0013AAC877C392 /* Pods-Smelter Demo macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Smelter Demo macOS.debug.xcconfig"; path = "Target Support Files/Pods-Smelter Demo macOS/Pods-Smelter Demo macOS.debug.xcconfig"; sourceTree = "<group>"; };
-		E1E7B9EE482796F1A6425814 /* Pods-Smelter Demo iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Smelter Demo iOS.release.xcconfig"; path = "Target Support Files/Pods-Smelter Demo iOS/Pods-Smelter Demo iOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +59,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5E5DC7CA9E53C31F67149A3 /* Pods_Smelter_Demo_iOS.framework in Frameworks */,
+				186BAEC925C808380041D6EF /* Alloy in Frameworks */,
+				186BAECD25C808430041D6EF /* Smelter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,13 +68,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A547FF5811626DACB80C54F5 /* Pods_Smelter_Demo_macOS.framework in Frameworks */,
+				186BAEC425C808230041D6EF /* Alloy in Frameworks */,
+				186BAECF25C808480041D6EF /* Smelter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		186BAEC725C808380041D6EF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		18C147E32283229800EB64EF /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -152,8 +157,7 @@
 				18C147EA2283233F00EB64EF /* Smelter Demo iOS */,
 				18C148022283272000EB64EF /* Smelter Demo macOS */,
 				18CB498A227D73C70092971D /* Products */,
-				E4201E212F870B2062BE76FB /* Pods */,
-				1C8A10978DD509111D5E0954 /* Frameworks */,
+				186BAEC725C808380041D6EF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -176,26 +180,6 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		1C8A10978DD509111D5E0954 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				8A9DFC5A5C0EBEEDD09B81D0 /* Pods_Smelter_Demo_iOS.framework */,
-				D553B76BF96684140FCC1D21 /* Pods_Smelter_Demo_macOS.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		E4201E212F870B2062BE76FB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				49C441839C070974A310B13E /* Pods-Smelter Demo iOS.debug.xcconfig */,
-				E1E7B9EE482796F1A6425814 /* Pods-Smelter Demo iOS.release.xcconfig */,
-				D68A39644C0013AAC877C392 /* Pods-Smelter Demo macOS.debug.xcconfig */,
-				42F379C63C7FF658825B6D42 /* Pods-Smelter Demo macOS.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -203,17 +187,19 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 18C147F82283234000EB64EF /* Build configuration list for PBXNativeTarget "Smelter Demo iOS" */;
 			buildPhases = (
-				01902A9C8013792CE7BBC027 /* [CP] Check Pods Manifest.lock */,
 				18C147E52283233F00EB64EF /* Sources */,
 				18C147E62283233F00EB64EF /* Frameworks */,
 				18C147E72283233F00EB64EF /* Resources */,
-				26EA719B5BAEEEE1121CC492 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "Smelter Demo iOS";
+			packageProductDependencies = (
+				186BAEC825C808380041D6EF /* Alloy */,
+				186BAECC25C808430041D6EF /* Smelter */,
+			);
 			productName = "Smelter Demo iOS";
 			productReference = 18C147E92283233F00EB64EF /* Smelter Demo iOS.app */;
 			productType = "com.apple.product-type.application";
@@ -222,17 +208,19 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 18C1480E2283272000EB64EF /* Build configuration list for PBXNativeTarget "Smelter Demo macOS" */;
 			buildPhases = (
-				9F92B7567DC049089FE4B577 /* [CP] Check Pods Manifest.lock */,
 				18C147FD2283272000EB64EF /* Sources */,
 				18C147FE2283272000EB64EF /* Frameworks */,
 				18C147FF2283272000EB64EF /* Resources */,
-				E4C1174268942E8BD3B9B254 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "Smelter Demo macOS";
+			packageProductDependencies = (
+				186BAEC325C808230041D6EF /* Alloy */,
+				186BAECE25C808480041D6EF /* Smelter */,
+			);
 			productName = "Smelter Demo macOS";
 			productReference = 18C148012283272000EB64EF /* Smelter Demo macOS.app */;
 			productType = "com.apple.product-type.application";
@@ -264,6 +252,9 @@
 				Base,
 			);
 			mainGroup = 18CB4980227D73C70092971D;
+			packageReferences = (
+				186BAEC225C808230041D6EF /* XCRemoteSwiftPackageReference "Alloy" */,
+			);
 			productRefGroup = 18CB498A227D73C70092971D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -299,87 +290,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		01902A9C8013792CE7BBC027 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Smelter Demo iOS-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		26EA719B5BAEEEE1121CC492 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo iOS/Pods-Smelter Demo iOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo iOS/Pods-Smelter Demo iOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo iOS/Pods-Smelter Demo iOS-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9F92B7567DC049089FE4B577 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Smelter Demo macOS-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E4C1174268942E8BD3B9B254 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo macOS/Pods-Smelter Demo macOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo macOS/Pods-Smelter Demo macOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Smelter Demo macOS/Pods-Smelter Demo macOS-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		18C147E52283233F00EB64EF /* Sources */ = {
@@ -439,7 +349,6 @@
 /* Begin XCBuildConfiguration section */
 		18C147F92283234000EB64EF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 49C441839C070974A310B13E /* Pods-Smelter Demo iOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -461,7 +370,6 @@
 		};
 		18C147FA2283234000EB64EF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E1E7B9EE482796F1A6425814 /* Pods-Smelter Demo iOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -484,7 +392,6 @@
 		};
 		18C1480F2283272000EB64EF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D68A39644C0013AAC877C392 /* Pods-Smelter Demo macOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Smelter Demo macOS/Smelter_Demo_macOS.entitlements";
@@ -505,7 +412,6 @@
 		};
 		18C148102283272000EB64EF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 42F379C63C7FF658825B6D42 /* Pods-Smelter Demo macOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Smelter Demo macOS/Smelter_Demo_macOS.entitlements";
@@ -670,6 +576,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		186BAEC225C808230041D6EF /* XCRemoteSwiftPackageReference "Alloy" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/s1ddok/Alloy.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.16.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		186BAEC325C808230041D6EF /* Alloy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 186BAEC225C808230041D6EF /* XCRemoteSwiftPackageReference "Alloy" */;
+			productName = Alloy;
+		};
+		186BAEC825C808380041D6EF /* Alloy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 186BAEC225C808230041D6EF /* XCRemoteSwiftPackageReference "Alloy" */;
+			productName = Alloy;
+		};
+		186BAECC25C808430041D6EF /* Smelter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Smelter;
+		};
+		186BAECE25C808480041D6EF /* Smelter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Smelter;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 18CB4981227D73C70092971D /* Project object */;
 }

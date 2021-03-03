@@ -1,43 +1,34 @@
-//
-//  MobileNetEncoder.swift
-//  Smelter Demo
-//
-//  Created by Eugene Bokhan on 08/05/2019.
-//  Copyright © 2019 Eugene Bokhan. All rights reserved.
-//
-
 import Alloy
 import Smelter
-import MetalPerformanceShaders
 
-final internal class MobileNetEncoder {
-
-    // MARK: - Errors
-
-    internal enum Errors: Error {
+final class MobileNetEncoder {
+    
+    // MARK: - Type Definition
+    
+    enum Error: Swift.Error {
         case graphEncodingFailed
     }
 
     // MARK: - Propertires
 
     private let mobileNetGraph: MPSNNGraph
-    private let normalizeKernelEncoder: NormalizeKernelEncoder
+    private let normalize: Normalize
 
     // MARK: - Life Cycle
 
-    internal init(context: MTLContext,
-                  modelData: Data,
-                  configuration: ONNXGraph.Configuration) throws {
-        self.normalizeKernelEncoder = try NormalizeKernelEncoder(context: context)
-        self.mobileNetGraph = try ONNXGraph(data: modelData).metalGraph(device: context.device,
-                                                                        configuration: configuration)
+    init(context: MTLContext,
+         modelData: Data,
+         configuration: ONNXGraph.Configuration) throws {
+        self.normalize = try .init(context: context)
+        self.mobileNetGraph = try ONNXGraph(data: modelData,
+                                            configuration: configuration).metalGraph(device: context.device)
     }
-
+    
     // MARK: - Encode
-
-    internal func encode(inputTexture: MTLTexture,
-                         in commandBuffer: MTLCommandBuffer) throws -> MPSImage {
-        let descriptor = inputTexture.descriptor
+    
+    func encode(source: MTLTexture,
+                in commandBuffer: MTLCommandBuffer) throws -> MPSImage {
+        let descriptor = source.descriptor
         descriptor.usage = [.shaderRead, .shaderWrite]
         descriptor.storageMode = .private
         // we need a signed pixel format to store negative values after normalization
@@ -45,24 +36,19 @@ final internal class MobileNetEncoder {
         
         let normalizedImage = MPSTemporaryImage(commandBuffer: commandBuffer,
                                                 textureDescriptor: descriptor)
-        defer { normalizedImage.readCount = 0 }
+        defer { normalizedImage.readCount = .zero }
 
-        self.normalizeKernelEncoder.encode(sourceTexture: inputTexture,
-                                           destinationTexture: normalizedImage.texture,
-                                           mean: MobileNetEncoder.normalizationMean,
-                                           std: MobileNetEncoder.normalizationSTD,
-                                           in: commandBuffer)
-
-        commandBuffer.pushDebugGroup("MobileNet Encoder")
+        self.normalize(source: source,
+                       mean: Self.normalizationMean,
+                       std: Self.normalizationSTD,
+                       destination: normalizedImage.texture,
+                       in: commandBuffer)
         
         let inputMPSImage = MPSImage(texture: normalizedImage.texture,
                                      featureChannels: 3)
-        guard
-            let modelGraphResult = self.mobileNetGraph.encode(to: commandBuffer,
-                                                              sourceImages: [inputMPSImage])
-        else { throw Errors.graphEncodingFailed }
-
-        commandBuffer.popDebugGroup()
+        guard let modelGraphResult = self.mobileNetGraph.encode(to: commandBuffer,
+                                                                sourceImages: [inputMPSImage])
+        else { throw Error.graphEncodingFailed }
 
         return modelGraphResult
     }

@@ -23,7 +23,7 @@ class ViewController: UINSViewController {
 
     // MARK: - Internal Types
 
-    private enum Errors: Error {
+    private enum Error: Swift.Error {
         case cgImageCreationFailed
         case graphResultReadingFailed
     }
@@ -82,9 +82,9 @@ class ViewController: UINSViewController {
 
     func setupContext() {
         #if os(iOS)
-        self.metalContext = MTLContext(device: Metal.device)
+        self.metalContext = try! .init()
         #elseif os(macOS)
-        self.metalContext = MTLContext(device: Metal.lowPowerDevice ?? Metal.device)
+        self.metalContext = try! .init(device: Metal.lowPowerDevice ?? Metal.device)
         #endif
     }
 
@@ -102,9 +102,8 @@ class ViewController: UINSViewController {
         /// Create a CGImage.
         let image = self.testImages[index]
 
-        guard
-            let cgImage = image.cgImage
-        else { throw Errors.cgImageCreationFailed }
+        guard let cgImage = image.cgImage
+        else { throw Error.cgImageCreationFailed }
 
         /// Create texture from CGImage.
         ///
@@ -115,13 +114,12 @@ class ViewController: UINSViewController {
         var outputImage: MPSImage!
         /// Run the prediction on the created texture.
         try self.metalContext.scheduleAndWait { commandBuffer in
-            outputImage = try self.mobileNetEncoder.encode(inputTexture: inputTexture,
+            outputImage = try self.mobileNetEncoder.encode(source: inputTexture,
                                                            in: commandBuffer)
         }
         /// Read the prediction results.
-        guard
-            let output = outputImage.toFloatArray()
-        else { throw Errors.graphResultReadingFailed }
+        guard let output = outputImage.toFloatArray()
+        else { throw Error.graphResultReadingFailed }
         /// Create a `[label: probability]` dictionary.
         var predictionDictionary: [String: Float] = [:]
         for (index, element) in classificationLabels.enumerated() {
