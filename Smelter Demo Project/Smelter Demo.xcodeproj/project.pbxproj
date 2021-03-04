@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1837ECAA25F127F500C535A5 /* Smelter in Frameworks */ = {isa = PBXBuildFile; productRef = 1837ECA925F127F500C535A5 /* Smelter */; };
 		186BAEC425C808230041D6EF /* Alloy in Frameworks */ = {isa = PBXBuildFile; productRef = 186BAEC325C808230041D6EF /* Alloy */; };
 		186BAEC925C808380041D6EF /* Alloy in Frameworks */ = {isa = PBXBuildFile; productRef = 186BAEC825C808380041D6EF /* Alloy */; };
 		186BAECD25C808430041D6EF /* Smelter in Frameworks */ = {isa = PBXBuildFile; productRef = 186BAECC25C808430041D6EF /* Smelter */; };
@@ -68,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1837ECAA25F127F500C535A5 /* Smelter in Frameworks */,
 				186BAEC425C808230041D6EF /* Alloy in Frameworks */,
 				186BAECF25C808480041D6EF /* Smelter in Frameworks */,
 			);
@@ -220,6 +222,7 @@
 			packageProductDependencies = (
 				186BAEC325C808230041D6EF /* Alloy */,
 				186BAECE25C808480041D6EF /* Smelter */,
+				1837ECA925F127F500C535A5 /* Smelter */,
 			);
 			productName = "Smelter Demo macOS";
 			productReference = 18C148012283272000EB64EF /* Smelter Demo macOS.app */;
@@ -232,7 +235,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1020;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = "Eugene Bokhan";
 				TargetAttributes = {
 					18C147E82283233F00EB64EF = {
@@ -254,6 +257,7 @@
 			mainGroup = 18CB4980227D73C70092971D;
 			packageReferences = (
 				186BAEC225C808230041D6EF /* XCRemoteSwiftPackageReference "Alloy" */,
+				1837ECA825F127F500C535A5 /* XCRemoteSwiftPackageReference "Smelter" */,
 			);
 			productRefGroup = 18CB498A227D73C70092971D /* Products */;
 			projectDirPath = "";
@@ -395,6 +399,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Smelter Demo macOS/Smelter_Demo_macOS.entitlements";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = U59P58LC6V;
@@ -415,6 +420,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Smelter Demo macOS/Smelter_Demo_macOS.entitlements";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = U59P58LC6V;
@@ -456,6 +462,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -517,6 +524,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -578,6 +586,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		1837ECA825F127F500C535A5 /* XCRemoteSwiftPackageReference "Smelter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/prisma-ai/Smelter";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.6;
+			};
+		};
 		186BAEC225C808230041D6EF /* XCRemoteSwiftPackageReference "Alloy" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/s1ddok/Alloy.git";
@@ -589,6 +605,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1837ECA925F127F500C535A5 /* Smelter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1837ECA825F127F500C535A5 /* XCRemoteSwiftPackageReference "Smelter" */;
+			productName = Smelter;
+		};
 		186BAEC325C808230041D6EF /* Alloy */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 186BAEC225C808230041D6EF /* XCRemoteSwiftPackageReference "Alloy" */;

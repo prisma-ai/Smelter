@@ -5,9 +5,6 @@
       location = "group:..">
    </FileRef>
    <FileRef
-      location = "group:../../../s1ddok/Alloy">
-   </FileRef>
-   <FileRef
       location = "group:Smelter Demo.xcodeproj">
    </FileRef>
 </Workspace>

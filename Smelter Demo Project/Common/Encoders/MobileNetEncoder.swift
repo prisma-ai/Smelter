@@ -12,14 +12,14 @@ final class MobileNetEncoder {
     // MARK: - Propertires
 
     private let mobileNetGraph: MPSNNGraph
-    private let normalize: Normalize
+    private let normalization: Normalization
 
     // MARK: - Life Cycle
 
     init(context: MTLContext,
          modelData: Data,
          configuration: ONNXGraph.Configuration) throws {
-        self.normalize = try .init(context: context)
+        self.normalization = try .init(context: context)
         self.mobileNetGraph = try ONNXGraph(data: modelData,
                                             configuration: configuration).metalGraph(device: context.device)
     }
@@ -38,7 +38,7 @@ final class MobileNetEncoder {
                                                 textureDescriptor: descriptor)
         defer { normalizedImage.readCount = .zero }
 
-        self.normalize(source: source,
+        self.normalization(source: source,
                        mean: Self.normalizationMean,
                        std: Self.normalizationSTD,
                        destination: normalizedImage.texture,
