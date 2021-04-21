@@ -14,7 +14,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/s1ddok/Alloy.git",
-                 .upToNextMinor(from:"0.16.5")),
+                 .upToNextMinor(from: "0.16.6")),
         .package(name: "SwiftProtobuf",
                  url: "https://github.com/apple/swift-protobuf.git",
                  .exact("1.7.0"))
