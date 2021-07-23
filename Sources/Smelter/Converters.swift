@@ -322,8 +322,13 @@ final class PReluConverter: NodeConverter {
               let aTensor = graph.tensor(name: node.input[1])
         else { throw ONNXGraph.Errors.noSuchOutput }
 
-        let prelu = MPSCNNNeuronPReLUNode(source: input, aData: aTensor.rawData)
-        graph.addFilter(prelu,
+        let alpha = aTensor.rawData.withUnsafeBytes {
+            $0.load(as: Float.self)
+        }
+
+        let relu = MPSCNNNeuronReLUNode(source: input, a: alpha)
+
+        graph.addFilter(relu,
                         outputShape: inputShape,
                         withOutputs: node.output)
     }
