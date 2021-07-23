@@ -313,6 +313,22 @@ final class ReluConverter: NodeConverter {
     }
 }
 
+final class PReluConverter: NodeConverter {
+    func convert(in graph: ONNXGraph,
+                 node: Onnx_NodeProto) throws {
+        guard node.input.count >= 2,
+              let input = graph.output(name: node.input[0]),
+              let inputShape = graph.shape(output: node.input[0]),
+              let aTensor = graph.tensor(name: node.input[1])
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let prelu = MPSCNNNeuronPReLUNode(source: input, aData: aTensor.rawData)
+        graph.addFilter(prelu,
+                        outputShape: inputShape,
+                        withOutputs: node.output)
+    }
+}
+
 final class EluConverter: NodeConverter {
     func convert(in graph: ONNXGraph,
                  node: Onnx_NodeProto) throws {
