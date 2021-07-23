@@ -126,6 +126,7 @@ public final class ONNXGraph {
             .register(name: "Softplus", converter: SoftplusConverter())
             .register(name: "Softsign", converter: SoftsignConverter())
             .register(name: "Tanh", converter: TanhConverter())
+            .register(name: "PRelu", converter: PReluConverter())
 
         if #available(iOS 11.3, tvOS 11.3, macOS 10.13.4, *) {
             self.register(name: "BatchNormalization", converter: BatchNormalizationConverter())
