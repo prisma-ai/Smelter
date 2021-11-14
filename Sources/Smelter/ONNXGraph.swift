@@ -1,9 +1,7 @@
-import Alloy
 import MetalPerformanceShaders
 
 public final class ONNXGraph {
-
-    // MARK - Configuration
+    // MARK: - Configuration
 
     public struct Configuration {
         public enum Scale {
@@ -25,8 +23,10 @@ public final class ONNXGraph {
         public let inputConstraint: InputConstraint
         public let billinearUpsamplingConfiguration: BillinearUpsampling
 
-        public init(inputConstraint: InputConstraint = .none,
-                    billinearUpsamplingConfiguration: BillinearUpsampling = .default) {
+        public init(
+            inputConstraint: InputConstraint = .none,
+            billinearUpsamplingConfiguration: BillinearUpsampling = .default
+        ) {
             self.inputConstraint = inputConstraint
             self.billinearUpsamplingConfiguration = billinearUpsamplingConfiguration
         }
@@ -50,8 +50,8 @@ public final class ONNXGraph {
 
     private typealias Filter = AnyObject
 
-    // MARK - Properties
-    
+    // MARK: - Properties
+
     public var modelFormat: Format = .onnx
     public var configuration: Configuration
 
@@ -64,26 +64,30 @@ public final class ONNXGraph {
 
     // TODO: Probably should be returning shapes paired with names
     public var outputShapes: [Shape] {
-        return self.graphProto.output.compactMap { output in
+        self.graphProto.output.compactMap { output in
             let shape = output.type.tensorType.shape.dim.map { Int($0.dimValue) }
 
             switch shape.count {
             case 3:
-                return .init(channels: shape[0],
-                             width: shape[1],
-                             height: shape[2],
-                             depth: 1)
+                return .init(
+                    channels: shape[0],
+                    width: shape[1],
+                    height: shape[2],
+                    depth: 1
+                )
             case 4:
-                return .init(channels: shape[1],
-                             width: shape[2],
-                             height: shape[3],
-                             depth: 1)
+                return .init(
+                    channels: shape[1],
+                    width: shape[2],
+                    height: shape[3],
+                    depth: 1
+                )
             default: return nil
             }
         }
     }
 
-    // MARK - Life Cycle
+    // MARK: - Life Cycle
 
     public init(data: Data, configuration: Configuration) throws {
         let modelProto = try Onnx_ModelProto(serializedData: data)
@@ -96,7 +100,7 @@ public final class ONNXGraph {
         }
         self.configuration = configuration
 
-        self.tensors = self.graphProto.initializer.reduce(into: self.tensors) { (res, tensor) in
+        self.tensors = self.graphProto.initializer.reduce(into: self.tensors) { res, tensor in
             res[tensor.name] = tensor
         }
 
@@ -109,8 +113,8 @@ public final class ONNXGraph {
             .register(name: "ConvTranspose", converter: ConvolutionConverter())
             .register(name: "Sigmoid", converter: SigmoidConverter())
             .register(name: "Upsample", converter: UpsampleConverter(alignCorners: self.configuration
-                                                                                       .billinearUpsamplingConfiguration
-                                                                                       .alignCorners))
+                    .billinearUpsamplingConfiguration
+                    .alignCorners))
             .register(name: "HardSigmoid", converter: HardSigmoidConverter())
             .register(name: "HardSigmoid", converter: HardSigmoidConverter())
             .register(name: "Concat", converter: ConcatConverter())
@@ -136,20 +140,23 @@ public final class ONNXGraph {
                 .register(name: "Pow", converter: PowConverter())
                 .register(name: "Exp", converter: ExpConverter())
         }
-        
+
         if #available(iOS 12.1, tvOS 12.1, macOS 10.14.1, *) {
             self.register(name: "Reshape", converter: ReshapeConverter())
                 .register(name: "Flatten", converter: FlattenConverter())
                 .register(name: "Pad", converter: PaddingConverter())
-            
         }
     }
 
-    public convenience init(contentsOf url: URL,
-                            configuration: Configuration) throws {
+    public convenience init(
+        contentsOf url: URL,
+        configuration: Configuration
+    ) throws {
         let data = try Data(contentsOf: url)
-        try self.init(data: data,
-                      configuration: configuration)
+        try self.init(
+            data: data,
+            configuration: configuration
+        )
     }
 
     public func metalGraph(device: MTLDevice) throws -> MPSNNGraph {
@@ -168,18 +175,20 @@ public final class ONNXGraph {
         guard let output = self.output(name: self.graphProto.output[0].name)
         else { throw Errors.noSuchOutput }
 
-        guard let graph = MPSNNGraph(device: device,
-                                     resultImage: output,
-                                     resultImageIsNeeded: true)
+        guard let graph = MPSNNGraph(
+            device: device,
+            resultImage: output,
+            resultImageIsNeeded: true
+        )
         else { throw Errors.graphInternalError }
 
         return graph
     }
 
-    // MARK - Private / Internal Methods
+    // MARK: - Private / Internal Methods
 
     private func initOutputs(configuration: Configuration) throws {
-        self.outputs = try self.graphProto.input.reduce(into: [String:MPSNNImageNode]()) { (res, valueInfo) in
+        self.outputs = try self.graphProto.input.reduce(into: [String: MPSNNImageNode]()) { res, valueInfo in
             if self.tensor(name: valueInfo.name) == nil {
                 let shape = valueInfo.type.tensorType.shape.dim.map { Int($0.dimValue) }
                 var channels, height, width: Int
@@ -201,29 +210,33 @@ public final class ONNXGraph {
                 switch configuration.inputConstraint {
                 case .none:
                     res[valueInfo.name] = imageNode
-                case .forceInputScale(let scale):
+                case let .forceInputScale(scale):
                     switch scale {
                     case .lanczos:
                         res[valueInfo.name + "_input"] = imageNode
                         let scale = MPSNNLanczosScaleNode(
                             source: imageNode,
-                            outputSize: MTLSize(width: width, height: height, depth: channels))
+                            outputSize: MTLSize(width: width, height: height, depth: channels)
+                        )
                         self.filters.append(scale)
                         res[valueInfo.name] = scale.resultImage
                     case .bilinear:
                         res[valueInfo.name + "_input"] = imageNode
                         let scale = MPSNNBilinearScaleNode(
                             source: imageNode,
-                            outputSize: MTLSize(width: width, height: height, depth: channels))
+                            outputSize: MTLSize(width: width, height: height, depth: channels)
+                        )
                         self.filters.append(scale)
                         res[valueInfo.name] = scale.resultImage
                     }
                 }
 
-                self.nodeShapes[valueInfo.name] = .init(channels: 1,
-                                                        width: width,
-                                                        height: height,
-                                                        depth: channels)
+                self.nodeShapes[valueInfo.name] = .init(
+                    channels: 1,
+                    width: width,
+                    height: height,
+                    depth: channels
+                )
             }
         }
     }
@@ -238,9 +251,11 @@ public final class ONNXGraph {
         self.tensors[name] = data
     }
 
-    internal func addFilter(_ filter: MPSNNFilterNode,
-                            outputShape: Shape,
-                            withOutputs outputs: [String]) {
+    internal func addFilter(
+        _ filter: MPSNNFilterNode,
+        outputShape: Shape,
+        withOutputs outputs: [String]
+    ) {
         self.filters.append(filter)
         for output in outputs {
             self.nodeShapes[output] = outputShape
@@ -249,14 +264,14 @@ public final class ONNXGraph {
     }
 
     internal func output(name: String) -> MPSNNImageNode? {
-        return self.outputs[name]
+        self.outputs[name]
     }
 
     internal func tensor(name: String) -> Onnx_TensorProto? {
-        return self.tensors[name]
+        self.tensors[name]
     }
 
     internal func shape(output: String) -> Shape? {
-        return self.nodeShapes[output]
+        self.nodeShapes[output]
     }
 }

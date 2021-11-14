@@ -1,4 +1,4 @@
-import Alloy
+import Foundation
 
 extension Data {
     func array<T>() -> [T] {

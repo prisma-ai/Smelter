@@ -1,7 +1,4 @@
-import Alloy
-
 extension Onnx_TensorProto {
-
     var integers: [Int] {
         switch Int(self.dataType) {
         case DataType.int32.rawValue,
@@ -16,7 +13,7 @@ extension Onnx_TensorProto {
                 let int64Array: [Int64] = self.rawData.array()
                 return int64Array.map(Int.init)
             }
-            
+
             return self.int64Data.map(Int.init)
         case DataType.uint32.rawValue,
              DataType.uint64.rawValue:
@@ -60,12 +57,11 @@ extension Onnx_TensorProto {
         case DataType.float16.rawValue:
             return self.rawData.convertingFloat16toFloat32()
         default:
-             fatalError("Unsupported conversion rule")
+            fatalError("Unsupported conversion rule")
         }
     }
 
     var length: Int {
-        return Int(self.dims.reduce(1, *))
+        Int(self.dims.reduce(1, *))
     }
-
 }
