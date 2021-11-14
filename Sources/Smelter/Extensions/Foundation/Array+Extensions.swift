@@ -1,11 +1,15 @@
 extension Array {
-    func reformatingConvolutionWeight(outputChannels: Int,
-                                      inputChannels: Int,
-                                      kernelHeight: Int,
-                                      kernelWidth: Int,
-                                      isTranspose: Bool) -> [Element] {
-        var data: [Element] = [Element](repeating: self[0],
-                                        count: self.count)
+    func reformatingConvolutionWeight(
+        outputChannels: Int,
+        inputChannels: Int,
+        kernelHeight: Int,
+        kernelWidth: Int,
+        isTranspose: Bool
+    ) -> [Element] {
+        var data = [Element](
+            repeating: self[0],
+            count: self.count
+        )
         for oc in 0 ..< outputChannels {
             for ic in 0 ..< inputChannels {
                 for kh in 0 ..< kernelHeight {
@@ -15,18 +19,18 @@ extension Array {
 
                         if isTranspose {
                             inputIdx = ic * outputChannels * kernelHeight * kernelWidth
-                                     + oc * kernelHeight * kernelWidth
-                                     + kh * kernelWidth + kw
+                                + oc * kernelHeight * kernelWidth
+                                + kh * kernelWidth + kw
                             outputIdx = oc * kernelHeight * kernelWidth * inputChannels
-                                     + (kernelHeight - 1 - kh) * kernelWidth * inputChannels
-                                     + (kernelWidth - 1 - kw) * inputChannels + ic
+                                + (kernelHeight - 1 - kh) * kernelWidth * inputChannels
+                                + (kernelWidth - 1 - kw) * inputChannels + ic
                         } else {
                             inputIdx = oc * inputChannels * kernelHeight * kernelWidth
-                                     + ic * kernelHeight * kernelWidth
-                                     + kh * kernelWidth + kw
+                                + ic * kernelHeight * kernelWidth
+                                + kh * kernelWidth + kw
                             outputIdx = oc * inputChannels * kernelHeight * kernelWidth
-                                      + kh * kernelWidth * inputChannels
-                                      + kw * inputChannels + ic
+                                + kh * kernelWidth * inputChannels
+                                + kw * inputChannels + ic
                         }
 
                         data[outputIdx] = self[inputIdx]
@@ -39,19 +43,19 @@ extension Array {
     }
 
     /// Returns the element at the specified index if it is within bounds, otherwise nil.
-    subscript (safe index: Index) -> Element? {
-        return self.indices.contains(index) ? self[index] : nil
+    subscript(safe index: Index) -> Element? {
+        self.indices.contains(index) ? self[index] : nil
     }
-    
+
     var unsafeMutablePointer: UnsafeMutablePointer<Element>? {
         self.withUnsafeBufferPointer {
-            return UnsafeMutablePointer(mutating: $0.baseAddress)
+            UnsafeMutablePointer(mutating: $0.baseAddress)
         }
     }
 
     var unsafeMutableRawPointer: UnsafeMutableRawPointer? {
         self.withUnsafeBufferPointer {
-            return UnsafeMutableRawPointer(mutating: $0.baseAddress)
+            UnsafeMutableRawPointer(mutating: $0.baseAddress)
         }
     }
 }
