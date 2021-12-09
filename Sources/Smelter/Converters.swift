@@ -1217,3 +1217,72 @@ final class LogSoftmaxConverter: NodeConverter {
         )
     }
 }
+
+@objc private final class GroupNormDataSource: NSObject, MPSCNNGroupNormalizationDataSource {
+    var numberOfFeatureChannels: Int
+    var numberOfGroups: Int
+    var gammas: [Float]
+    var betas: [Float]
+
+    public init(
+        channels: Int,
+        groups: Int,
+        gammas: [Float],
+        betas: [Float]
+    ) {
+        self.numberOfFeatureChannels = channels
+        self.numberOfGroups = groups
+        self.gammas = gammas
+        self.betas = betas
+    }
+
+    func gamma() -> UnsafeMutablePointer<Float>? {
+        self.gammas.unsafeMutablePointer
+    }
+
+    func beta() -> UnsafeMutablePointer<Float>? {
+        self.betas.unsafeMutablePointer
+    }
+
+    func label() -> String? {
+        "group norm data source"
+    }
+
+    init?(coder aDecoder: NSCoder) {
+        fatalError()
+    }
+
+    func copy(with zone: NSZone? = nil) -> Any {
+        self.mutableCopy()
+    }
+}
+
+@available(iOS 13.0, tvOS 13.0, macOS 10.15.0, *)
+final class GroupNormConverter: NodeConverter {
+    func convert(in graph: ONNXGraph, node: Onnx_NodeProto) throws {
+        guard node.input.count >= 4,
+              let input = graph.output(name: node.input[0]),
+              let inputShape = graph.shape(output: node.input[0]),
+              let groups = graph.tensor(name: node.input[1])?.integers.first,
+              let gamma = graph.tensor(name: node.input[2])?.floats,
+              let beta = graph.tensor(name: node.input[3])?.floats
+        else { throw ONNXGraph.Errors.noSuchOutput }
+
+        let dataSource = GroupNormDataSource(
+            channels: gamma.count,
+            groups: groups,
+            gammas: gamma,
+            betas: beta
+        )
+
+        let groupNorm = MPSCNNGroupNormalizationNode(
+            source: input,
+            dataSource: dataSource
+        )
+        graph.addFilter(
+            groupNorm,
+            outputShape: inputShape,
+            withOutputs: node.output
+        )
+    }
+}

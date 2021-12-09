@@ -146,6 +146,10 @@ public final class ONNXGraph {
                 .register(name: "Flatten", converter: FlattenConverter())
                 .register(name: "Pad", converter: PaddingConverter())
         }
+
+        if #available(iOS 13.0, tvOS 13.0, macOS 10.15.0, *) {
+            self.register(name: "custom_group_norm", converter: GroupNormConverter())
+        }
     }
 
     public convenience init(

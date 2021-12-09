@@ -24,11 +24,9 @@ public struct Shape {
     )
 }
 
-extension Shape: ArrayRepresentable {
-    typealias T = Int
-
-    static var keyPaths: [WritableKeyPath<Shape, Int>] {
-        [\.channels, \.width, \.height, \.depth]
+extension Shape {
+    func toArray() -> [Int] {
+        [self.channels, self.width, self.height, self.depth]
     }
 
     init() { self = .zero }
