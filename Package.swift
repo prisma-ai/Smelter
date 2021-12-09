@@ -18,7 +18,7 @@ let package = Package(
         .package(
             name: "SwiftProtobuf",
             url: "https://github.com/apple/swift-protobuf.git",
-            .exact("1.7.0")
+            .upToNextMajor(from: "1.18.0")
         ),
     ],
     targets: [
