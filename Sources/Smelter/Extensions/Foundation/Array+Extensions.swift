@@ -1,5 +1,6 @@
 import Accelerate
 
+@available(iOS 14, macOS 11, *)
 extension BNNS {
     static func transpose(
         array: [Float],
