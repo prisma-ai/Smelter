@@ -91,6 +91,18 @@ enum ConvWeightArray {
         if !isONNX2MPS {
             switch self.weight {
             case let .float32(array):
+                if !isTranspose,
+                   #available(iOS 14, macOS 11, *),
+                   let values = try? BNNS.transpose(
+                    array: array,
+                    shape: [outputChannels, inputChannels, kernelHeight, kernelWidth],
+                    swizzlePlan: [(1, 2), (2, 3)]
+                   )
+                {
+                    self.weight = .float32(values)
+                    break
+                }
+
                 self.weight = .float32(array.reformatingConvolutionWeight(
                     outputChannels: outputChannels,
                     inputChannels: inputChannels,
