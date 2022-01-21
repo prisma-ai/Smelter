@@ -1,3 +1,52 @@
+import Accelerate
+
+extension BNNS {
+    static func transpose(
+        array: [Float],
+        shape: [Int],
+        swizzlePlan: [(Int, Int)]
+    ) throws -> [Float] {
+        var x = array
+        var y: [Float] = Array(repeating: 0, count: array.count)
+
+        var inputShape = shape
+
+        func bnnsShape(_ v: [Int]) -> BNNS.Shape {
+            return .tensor4DFirstMajor(v[0], v[1], v[2], v[3])
+        }
+
+        try swizzlePlan.forEach { transposition in
+            try x.withUnsafeMutableBufferPointer { inputPointer in
+                try y.withUnsafeMutableBufferPointer { outputPointer in
+                    var outputShape = inputShape
+                    outputShape[transposition.0] = inputShape[transposition.1]
+                    outputShape[transposition.1] = inputShape[transposition.0]
+
+                    try BNNS.transpose(
+                        input: .init(
+                            data: inputPointer,
+                            shape: bnnsShape(inputShape)
+                        )!,
+                        output: .init(
+                            data: outputPointer,
+                            shape: bnnsShape(outputShape)
+                        )!,
+                        firstTransposeAxis: transposition.0,
+                        secondTransposeAxis: transposition.1,
+                        filterParameters: nil
+                    )
+
+                    inputShape = outputShape
+                }
+            }
+
+            swap(&x, &y)
+        }
+
+        return x
+    }
+}
+
 extension Array {
     func reformatingConvolutionWeight(
         outputChannels: Int,
