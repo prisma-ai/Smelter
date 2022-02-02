@@ -22,13 +22,16 @@ public final class ONNXGraph {
 
         public let inputConstraint: InputConstraint
         public let billinearUpsamplingConfiguration: BillinearUpsampling
+        public let dims: [Int: Int]
 
         public init(
             inputConstraint: InputConstraint = .none,
-            billinearUpsamplingConfiguration: BillinearUpsampling = .default
+            billinearUpsamplingConfiguration: BillinearUpsampling = .default,
+            dims: [Int: Int] = [:]
         ) {
             self.inputConstraint = inputConstraint
             self.billinearUpsamplingConfiguration = billinearUpsamplingConfiguration
+            self.dims = dims
         }
     }
 
@@ -194,7 +197,9 @@ public final class ONNXGraph {
     private func initOutputs(configuration: Configuration) throws {
         self.outputs = try self.graphProto.input.reduce(into: [String: MPSNNImageNode]()) { res, valueInfo in
             if self.tensor(name: valueInfo.name) == nil {
-                let shape = valueInfo.type.tensorType.shape.dim.map { Int($0.dimValue) }
+                let shape = valueInfo.type.tensorType.shape.dim.enumerated().map {
+                    self.configuration.dims[$0.offset] ?? Int($0.element.dimValue)
+                }
                 var channels, height, width: Int
                 switch shape.count {
                 case 3:
